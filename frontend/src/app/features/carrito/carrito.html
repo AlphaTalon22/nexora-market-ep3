@@ -1,0 +1,60 @@
+<h1 class="titulo">Mi carrito</h1>
+
+@if (carrito.items().length === 0) {
+  <div class="estado-vacio">
+    <mat-icon>shopping_cart</mat-icon>
+    <h3>Tu carrito está vacío</h3>
+    <p>Agrega productos desde el catálogo para comenzar tu compra.</p>
+    <a mat-flat-button color="primary" routerLink="/catalogo">Ir al catálogo</a>
+  </div>
+} @else {
+  <div class="disposicion">
+    <section class="lineas">
+      @for (item of carrito.items(); track item.productoId) {
+        <article class="linea">
+          <img class="linea-imagen" [src]="item.imagen" [alt]="item.nombreProducto" />
+          <div class="linea-info">
+            <h3>{{ item.nombreProducto }}</h3>
+            <span class="linea-unitario">{{ item.precioUnitario | precioClp }} c/u</span>
+          </div>
+          <div class="cantidad">
+            <button mat-icon-button aria-label="Quitar una unidad" (click)="disminuir(item)">
+              <mat-icon>remove</mat-icon>
+            </button>
+            <span class="cantidad-numero">{{ item.cantidad }}</span>
+            <button mat-icon-button aria-label="Agregar una unidad" (click)="aumentar(item)">
+              <mat-icon>add</mat-icon>
+            </button>
+          </div>
+          <span class="linea-subtotal">{{ item.precioUnitario * item.cantidad | precioClp }}</span>
+          <button mat-icon-button class="linea-quitar" aria-label="Eliminar producto" (click)="quitar(item)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </article>
+      }
+    </section>
+
+    <aside class="resumen">
+      <h2>Resumen del pedido</h2>
+      <div class="fila">
+        <span>Productos</span>
+        <span>{{ carrito.cantidadTotal() }}</span>
+      </div>
+      <div class="fila">
+        <span>Envío</span>
+        <span class="gratis">Gratis</span>
+      </div>
+      <mat-divider></mat-divider>
+      <div class="fila total">
+        <span>Total</span>
+        <span>{{ carrito.total() | precioClp }}</span>
+      </div>
+
+      <button mat-flat-button color="primary" class="confirmar" [disabled]="confirmando()" (click)="confirmarPedido()">
+        <mat-icon>check_circle</mat-icon>
+        {{ confirmando() ? 'Procesando...' : 'Confirmar pedido' }}
+      </button>
+      <p class="nota">El pedido se envía a los servicios de pedidos y dispara los eventos hacia RabbitMQ y Kafka.</p>
+    </aside>
+  </div>
+}

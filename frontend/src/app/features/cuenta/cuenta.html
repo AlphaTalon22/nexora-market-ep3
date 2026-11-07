@@ -1,0 +1,57 @@
+<h1 class="titulo">Mi cuenta</h1>
+
+<section class="perfil">
+  <span class="avatar-grande">{{ iniciales() }}</span>
+  <div class="perfil-datos">
+    <h2>{{ usuario.usuario().nombre }}</h2>
+    <p>{{ usuario.usuario().correo }}</p>
+    <span class="etiqueta-cliente">Cliente Nexora Market</span>
+  </div>
+</section>
+
+@if (cargando()) {
+  <div class="estado-carga">
+    <div class="spinner"></div>
+    <p>Cargando tu información...</p>
+  </div>
+} @else {
+  <div class="columnas">
+    <section class="panel">
+      <h2><mat-icon>notifications</mat-icon> Notificaciones</h2>
+      @if (notificaciones().length === 0) {
+        <p class="vacio">No tienes notificaciones por ahora.</p>
+      } @else {
+        <ul class="lista-notificaciones">
+          @for (notificacion of notificaciones(); track notificacion.id) {
+            <li>
+              <mat-icon class="icono-notificacion">{{ iconoNotificacion(notificacion.tipo) }}</mat-icon>
+              <div class="notificacion-texto">
+                <p>{{ notificacion.mensaje }}</p>
+                <span>{{ notificacion.fecha | date: 'dd-MM-yyyy HH:mm' }}</span>
+              </div>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+
+    <section class="panel">
+      <h2><mat-icon>receipt_long</mat-icon> Boletas</h2>
+      @if (boletas().length === 0) {
+        <p class="vacio">Aún no tienes boletas generadas.</p>
+      } @else {
+        <ul class="lista-boletas">
+          @for (boleta of boletas(); track boleta.pagoId) {
+            <li>
+              <div class="boleta-info">
+                <span class="boleta-titulo">Boleta del pago #{{ boleta.pagoId }}</span>
+                <span class="boleta-detalle">Pedido #{{ boleta.pedidoId }} · {{ boleta.metodoPago }} · {{ boleta.fecha | date: 'dd-MM-yyyy' }}</span>
+              </div>
+              <span class="boleta-monto">{{ boleta.monto | precioClp }}</span>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+  </div>
+}

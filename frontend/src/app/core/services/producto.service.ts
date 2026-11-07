@@ -1,0 +1,133 @@
+import { Injectable } from '@angular/core';
+import { Observable, delay, of } from 'rxjs';
+import { Producto } from '../models/producto';
+
+const PRODUCTOS: Producto[] = [
+  {
+    id: 1,
+    nombre: 'Audífonos Bluetooth NexaSound X',
+    descripcion: 'Cancelación de ruido activa, 40 horas de batería y estuche de carga rápida.',
+    precio: 39990,
+    stock: 25,
+    categoria: 'Audio',
+    imagen: '/img/productos/audifonos.svg',
+  },
+  {
+    id: 2,
+    nombre: 'Parlante Portátil BoomBox',
+    descripcion: 'Sonido 360°, resistente al agua IPX7 y 12 horas de reproducción.',
+    precio: 24990,
+    stock: 18,
+    categoria: 'Audio',
+    imagen: '/img/productos/parlante.svg',
+  },
+  {
+    id: 3,
+    nombre: 'Teclado Mecánico RGB',
+    descripcion: 'Switches táctiles, retroiluminación RGB y reposamuñecas magnético.',
+    precio: 54990,
+    stock: 12,
+    categoria: 'Computación',
+    imagen: '/img/productos/teclado.svg',
+  },
+  {
+    id: 4,
+    nombre: 'Mouse Inalámbrico Pro',
+    descripcion: 'Sensor de 16.000 DPI, conexión dual y batería de larga duración.',
+    precio: 19990,
+    stock: 40,
+    categoria: 'Computación',
+    imagen: '/img/productos/mouse.svg',
+  },
+  {
+    id: 5,
+    nombre: 'Monitor 27" 4K UHD',
+    descripcion: 'Panel IPS, HDR10, 144 Hz y altura ajustable para trabajo y gaming.',
+    precio: 249990,
+    stock: 6,
+    categoria: 'Computación',
+    imagen: '/img/productos/monitor.svg',
+  },
+  {
+    id: 6,
+    nombre: 'Smartphone NexaPhone 12',
+    descripcion: 'Pantalla AMOLED 6.5", cámara de 108 MP y carga de 65 W.',
+    precio: 399990,
+    stock: 9,
+    categoria: 'Smartphones',
+    imagen: '/img/productos/smartphone.svg',
+  },
+  {
+    id: 7,
+    nombre: 'Smartwatch NexaFit',
+    descripcion: 'GPS integrado, monitor de salud y autonomía de 10 días.',
+    precio: 89990,
+    stock: 15,
+    categoria: 'Smartphones',
+    imagen: '/img/productos/smartwatch.svg',
+  },
+  {
+    id: 8,
+    nombre: 'Cargador Rápido 65W GaN',
+    descripcion: 'Tres puertos, carga simultánea y tamaño compacto de viaje.',
+    precio: 14990,
+    stock: 50,
+    categoria: 'Accesorios',
+    imagen: '/img/productos/cargador.svg',
+  },
+  {
+    id: 9,
+    nombre: 'Hub USB-C 7 en 1',
+    descripcion: 'HDMI 4K, USB 3.0, lector SD y carga PD de 100 W.',
+    precio: 22990,
+    stock: 30,
+    categoria: 'Accesorios',
+    imagen: '/img/productos/hub.svg',
+  },
+  {
+    id: 10,
+    nombre: 'Silla Gamer ErgoPro',
+    descripcion: 'Soporte lumbar, reclinación 160° y estructura de acero.',
+    precio: 149990,
+    stock: 8,
+    categoria: 'Gaming',
+    imagen: '/img/productos/silla.svg',
+  },
+  {
+    id: 11,
+    nombre: 'Control Inalámbrico XPlay',
+    descripcion: 'Gatillos analógicos, vibración háptica y batería de 20 horas.',
+    precio: 34990,
+    stock: 20,
+    categoria: 'Gaming',
+    imagen: '/img/productos/control.svg',
+  },
+  {
+    id: 12,
+    nombre: 'Lámpara LED de Escritorio',
+    descripcion: 'Tres tonos de luz, brazo ajustable y carga inalámbrica.',
+    precio: 12990,
+    stock: 35,
+    categoria: 'Hogar',
+    imagen: '/img/productos/lampara.svg',
+  },
+];
+
+@Injectable({ providedIn: 'root' })
+export class ProductoService {
+  listar(): Observable<Producto[]> {
+    return of(PRODUCTOS).pipe(delay(400));
+  }
+
+  obtener(id: number): Observable<Producto | undefined> {
+    return of(PRODUCTOS.find((producto) => producto.id === id)).pipe(delay(200));
+  }
+
+  categorias(): string[] {
+    return [...new Set(PRODUCTOS.map((producto) => producto.categoria))];
+  }
+
+  destacados(): Observable<Producto[]> {
+    return of(PRODUCTOS.slice(0, 4)).pipe(delay(400));
+  }
+}

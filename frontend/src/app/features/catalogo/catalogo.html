@@ -1,0 +1,48 @@
+<section class="encabezado">
+  <div>
+    <h1 class="titulo">Catálogo</h1>
+    <p class="subtitulo">Encuentra el producto perfecto entre {{ filtrados().length }} resultados.</p>
+  </div>
+</section>
+
+<section class="filtros">
+  <mat-form-field appearance="outline" class="campo-busqueda">
+    <mat-label>Buscar productos</mat-label>
+    <mat-icon matPrefix>search</mat-icon>
+    <input matInput [value]="busqueda()" (input)="busqueda.set($any($event.target).value)" placeholder="Ej: audífonos, monitor..." />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="campo-categoria">
+    <mat-label>Categoría</mat-label>
+    <mat-select [value]="categoria()" (selectionChange)="categoria.set($event.value)">
+      @for (opcion of categorias; track opcion) {
+        <mat-option [value]="opcion">{{ opcion }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  <button mat-button class="boton-limpiar" (click)="limpiarFiltros()">
+    <mat-icon>filter_alt_off</mat-icon>
+    Limpiar
+  </button>
+</section>
+
+@if (cargando()) {
+  <div class="estado-carga">
+    <div class="spinner"></div>
+    <p>Cargando catálogo...</p>
+  </div>
+} @else if (filtrados().length === 0) {
+  <div class="estado-vacio">
+    <mat-icon>search_off</mat-icon>
+    <h3>No encontramos productos</h3>
+    <p>Prueba con otro término de búsqueda o cambia la categoría.</p>
+    <button mat-flat-button color="primary" (click)="limpiarFiltros()">Limpiar filtros</button>
+  </div>
+} @else {
+  <div class="grilla-productos">
+    @for (producto of filtrados(); track producto.id) {
+      <app-producto-card [producto]="producto" (agregar)="agregar($event)" />
+    }
+  </div>
+}

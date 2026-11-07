@@ -1,0 +1,20 @@
+<mat-card class="tarjeta" appearance="outlined">
+  <img class="imagen" [src]="producto().imagen" [alt]="producto().nombre" loading="lazy" />
+  <div class="cuerpo">
+    <span class="categoria">{{ producto().categoria }}</span>
+    <h3 class="nombre">{{ producto().nombre }}</h3>
+    <p class="descripcion">{{ producto().descripcion }}</p>
+
+    <div class="pie">
+      <span class="precio">{{ producto().precio | precioClp }}</span>
+      <span class="stock" [class.agotado]="producto().stock === 0" [class.bajo]="producto().stock > 0 && producto().stock < 10">
+        {{ producto().stock === 0 ? 'Sin stock' : producto().stock + ' disponibles' }}
+      </span>
+    </div>
+
+    <button mat-flat-button color="primary" class="boton" [disabled]="producto().stock === 0" (click)="agregar.emit(producto())">
+      <mat-icon>add_shopping_cart</mat-icon>
+      Agregar al carrito
+    </button>
+  </div>
+</mat-card>

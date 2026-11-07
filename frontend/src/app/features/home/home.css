@@ -1,0 +1,145 @@
+.hero {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  overflow: hidden;
+  border-radius: 22px;
+  padding: 44px;
+  background: linear-gradient(120deg, var(--nx-primario-oscuro), var(--nx-primario) 65%, #3b82f6);
+  color: #fff;
+  box-shadow: var(--nx-sombra);
+}
+
+.hero-texto {
+  max-width: 620px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.etiqueta {
+  align-self: flex-start;
+  padding: 4px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+
+.hero h1 {
+  margin: 0;
+  font-size: clamp(30px, 4.5vw, 46px);
+  line-height: 1.1;
+}
+
+.resaltado {
+  color: var(--nx-acento);
+}
+
+.hero p {
+  margin: 0;
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.hero-acciones {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+.boton-hero {
+  background: var(--nx-acento);
+  color: #1f2937;
+  font-weight: 600;
+}
+
+.boton-secundario {
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+}
+
+.hero-decoracion {
+  opacity: 0.18;
+}
+
+.hero-decoracion mat-icon {
+  font-size: 190px;
+  width: 190px;
+  height: 190px;
+}
+
+.seccion {
+  margin-top: 40px;
+}
+
+.titulo-seccion {
+  margin: 0 0 16px;
+  font-size: 22px;
+  color: var(--nx-texto);
+}
+
+.cabecera-seccion {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ver-todo {
+  color: var(--nx-primario);
+}
+
+.grilla-categorias {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 14px;
+}
+
+.categoria-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 22px 14px;
+  border-radius: var(--nx-radio);
+  background: var(--nx-superficie);
+  border: 1px solid var(--nx-borde);
+  color: var(--nx-texto);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.categoria-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--nx-primario);
+}
+
+.categoria-card mat-icon {
+  color: var(--nx-primario);
+  font-size: 30px;
+  width: 30px;
+  height: 30px;
+}
+
+.grilla-productos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 20px;
+}
+
+@media (max-width: 720px) {
+  .hero {
+    padding: 28px 22px;
+  }
+
+  .hero-decoracion {
+    display: none;
+  }
+}

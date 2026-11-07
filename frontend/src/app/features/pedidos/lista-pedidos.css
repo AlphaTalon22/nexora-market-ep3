@@ -1,0 +1,79 @@
+.titulo {
+  margin: 0 0 20px;
+  font-size: 28px;
+}
+
+.lista {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pedido {
+  display: grid;
+  grid-template-columns: 1.2fr auto auto auto;
+  align-items: center;
+  gap: 18px;
+  padding: 16px 20px;
+  border-radius: var(--nx-radio);
+  background: var(--nx-superficie);
+  border: 1px solid var(--nx-borde);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.pedido:hover {
+  border-color: var(--nx-primario);
+  box-shadow: var(--nx-sombra);
+}
+
+.pedido-id {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.numero {
+  font-family: var(--nx-fuente-titulos);
+  font-weight: 700;
+  font-size: 17px;
+  color: var(--nx-texto);
+}
+
+.fecha {
+  font-size: 13px;
+  color: var(--nx-texto-suave);
+}
+
+.pedido-total {
+  font-weight: 700;
+  color: var(--nx-primario-oscuro);
+  font-size: 16px;
+}
+
+@media (max-width: 720px) {
+  .pedido {
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      'id estado'
+      'total accion';
+    row-gap: 10px;
+  }
+
+  .pedido-id {
+    grid-area: id;
+  }
+
+  .pedido-estado {
+    grid-area: estado;
+    justify-self: end;
+  }
+
+  .pedido-total {
+    grid-area: total;
+  }
+
+  a[mat-stroked-button] {
+    grid-area: accion;
+    justify-self: end;
+  }
+}

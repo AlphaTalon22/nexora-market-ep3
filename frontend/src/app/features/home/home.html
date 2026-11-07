@@ -1,0 +1,49 @@
+<section class="hero">
+  <div class="hero-texto">
+    <span class="etiqueta">Tecnología para todos los días</span>
+    <h1>Bienvenido a <span class="resaltado">Nexora Market</span></h1>
+    <p>Descubre productos de tecnología, gaming y hogar con despacho a todo Chile.</p>
+    <div class="hero-acciones">
+      <a mat-flat-button color="primary" routerLink="/catalogo" class="boton-hero">
+        <mat-icon>storefront</mat-icon>
+        Ver catálogo
+      </a>
+      <a mat-button routerLink="/catalogo" class="boton-secundario">Ofertas del día</a>
+    </div>
+  </div>
+  <div class="hero-decoracion">
+    <mat-icon>shopping_bag</mat-icon>
+  </div>
+</section>
+
+<section class="seccion">
+  <h2 class="titulo-seccion">Categorías</h2>
+  <div class="grilla-categorias">
+    @for (categoria of categorias; track categoria) {
+      <a class="categoria-card" routerLink="/catalogo" [queryParams]="{ categoria }">
+        <mat-icon>{{ icono(categoria) }}</mat-icon>
+        <span>{{ categoria }}</span>
+      </a>
+    }
+  </div>
+</section>
+
+<section class="seccion">
+  <div class="cabecera-seccion">
+    <h2 class="titulo-seccion">Productos destacados</h2>
+    <a mat-button routerLink="/catalogo" class="ver-todo">Ver todo <mat-icon>arrow_forward</mat-icon></a>
+  </div>
+
+  @if (cargando()) {
+    <div class="estado-carga">
+      <div class="spinner"></div>
+      <p>Cargando productos destacados...</p>
+    </div>
+  } @else {
+    <div class="grilla-productos">
+      @for (producto of destacados(); track producto.id) {
+        <app-producto-card [producto]="producto" (agregar)="agregar($event)" />
+      }
+    </div>
+  }
+</section>

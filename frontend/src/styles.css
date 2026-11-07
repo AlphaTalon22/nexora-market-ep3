@@ -1,0 +1,110 @@
+:root {
+  --nx-primario: #1d4ed8;
+  --nx-primario-oscuro: #1e3a8a;
+  --nx-acento: #f59e0b;
+  --nx-fondo: #f4f6fb;
+  --nx-superficie: #ffffff;
+  --nx-texto: #1f2937;
+  --nx-texto-suave: #6b7280;
+  --nx-borde: #e5e7eb;
+  --nx-exito: #16a34a;
+  --nx-alerta: #d97706;
+  --nx-peligro: #dc2626;
+  --nx-radio: 14px;
+  --nx-sombra: 0 10px 30px rgba(15, 23, 42, 0.08);
+  --nx-fuente-titulos: 'Poppins', 'Roboto', sans-serif;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
+  background: var(--nx-fondo);
+  color: var(--nx-texto);
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--nx-fuente-titulos);
+}
+
+.estado-carga,
+.estado-vacio,
+.estado-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  text-align: center;
+  padding: 56px 24px;
+  border-radius: var(--nx-radio);
+  background: var(--nx-superficie);
+  border: 1px dashed var(--nx-borde);
+  color: var(--nx-texto-suave);
+}
+
+.estado-vacio mat-icon,
+.estado-error mat-icon {
+  font-size: 54px;
+  width: 54px;
+  height: 54px;
+  color: #94a3b8;
+}
+
+.estado-error mat-icon {
+  color: var(--nx-peligro);
+}
+
+.estado-vacio h3,
+.estado-error h3 {
+  margin: 0;
+  color: var(--nx-texto);
+  font-size: 20px;
+}
+
+.estado-vacio p,
+.estado-error p,
+.estado-carga p {
+  margin: 0;
+  font-size: 14px;
+}
+
+.estado-carga p {
+  color: var(--nx-texto-suave);
+}
+
+.spinner {
+  width: 44px;
+  height: 44px;
+  border: 4px solid #dbeafe;
+  border-top-color: var(--nx-primario);
+  border-radius: 50%;
+  animation: nx-girar 0.8s linear infinite;
+}
+
+@keyframes nx-girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.toast-exito .mdc-snackbar__surface {
+  background: var(--nx-exito) !important;
+}
+
+.toast-error .mdc-snackbar__surface {
+  background: var(--nx-peligro) !important;
+}
+
+.toast-exito .mat-mdc-snack-bar-label,
+.toast-exito .mat-mdc-button,
+.toast-error .mat-mdc-snack-bar-label,
+.toast-error .mat-mdc-button {
+  color: #ffffff !important;
+}

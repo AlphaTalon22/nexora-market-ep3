@@ -1,0 +1,157 @@
+.cabecera {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.12);
+}
+
+.barra {
+  display: flex;
+  gap: 12px;
+  background: linear-gradient(120deg, var(--nx-primario-oscuro), var(--nx-primario));
+  color: #fff;
+  height: 64px;
+  padding: 0 20px;
+}
+
+.marca {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #fff;
+  text-decoration: none;
+}
+
+.logo-icono {
+  color: var(--nx-acento);
+}
+
+.marca-texto {
+  font-family: var(--nx-fuente-titulos);
+  font-size: 20px;
+  letter-spacing: 0.3px;
+}
+
+.marca-texto strong {
+  font-weight: 700;
+}
+
+.nav-escritorio {
+  display: flex;
+  gap: 4px;
+  margin-left: 24px;
+}
+
+.nav-escritorio a {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 14px;
+}
+
+.nav-escritorio a.activo {
+  color: #fff;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+}
+
+.espaciador {
+  flex: 1;
+}
+
+.boton-carrito {
+  color: #fff;
+}
+
+.boton-usuario {
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--nx-acento);
+  color: #1f2937;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.usuario-nombre {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.boton-menu-movil {
+  display: none;
+  color: #fff;
+}
+
+.contenido {
+  min-height: calc(100vh - 64px - 88px);
+  padding: 32px 20px 56px;
+  max-width: 1180px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.pie {
+  background: #0f172a;
+  color: rgba(255, 255, 255, 0.75);
+  padding: 22px 20px;
+}
+
+.pie-interior {
+  max-width: 1180px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  flex-wrap: wrap;
+  font-size: 13px;
+}
+
+.pie-marca {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--nx-fuente-titulos);
+  font-weight: 600;
+  color: #fff;
+}
+
+.pie-marca mat-icon {
+  color: var(--nx-acento);
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.pie-tec {
+  margin-left: auto;
+  opacity: 0.65;
+}
+
+@media (max-width: 900px) {
+  .nav-escritorio,
+  .boton-usuario {
+    display: none;
+  }
+
+  .boton-menu-movil {
+    display: inline-flex;
+  }
+
+  .barra {
+    padding: 0 10px;
+  }
+
+  .contenido {
+    padding: 20px 14px 48px;
+  }
+}

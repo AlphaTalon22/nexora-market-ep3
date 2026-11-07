@@ -1,0 +1,153 @@
+.titulo {
+  margin: 0 0 20px;
+  font-size: 28px;
+}
+
+.perfil {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 22px;
+  border-radius: var(--nx-radio);
+  background: linear-gradient(120deg, var(--nx-primario-oscuro), var(--nx-primario));
+  color: #fff;
+  margin-bottom: 24px;
+}
+
+.avatar-grande {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--nx-acento);
+  color: #1f2937;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.perfil-datos h2 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.perfil-datos p {
+  margin: 4px 0 8px;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 14px;
+}
+
+.etiqueta-cliente {
+  padding: 3px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.columnas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px;
+  align-items: start;
+}
+
+.panel {
+  padding: 20px;
+  border-radius: var(--nx-radio);
+  background: var(--nx-superficie);
+  border: 1px solid var(--nx-borde);
+}
+
+.panel h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 16px;
+  font-size: 17px;
+  color: var(--nx-texto);
+}
+
+.panel h2 mat-icon {
+  color: var(--nx-primario);
+}
+
+.lista-notificaciones,
+.lista-boletas {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.lista-notificaciones li,
+.lista-boletas li {
+  display: flex;
+  align-items: start;
+  gap: 12px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--nx-borde);
+}
+
+.lista-notificaciones li:last-child,
+.lista-boletas li:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.icono-notificacion {
+  color: var(--nx-primario);
+  background: #e0e7ff;
+  border-radius: 50%;
+  padding: 8px;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.notificacion-texto p {
+  margin: 0 0 3px;
+  font-size: 14px;
+}
+
+.notificacion-texto span {
+  font-size: 12px;
+  color: var(--nx-texto-suave);
+}
+
+.boleta-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.boleta-titulo {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.boleta-detalle {
+  font-size: 12px;
+  color: var(--nx-texto-suave);
+}
+
+.boleta-monto {
+  font-weight: 700;
+  color: var(--nx-primario-oscuro);
+}
+
+.vacio {
+  color: var(--nx-texto-suave);
+  font-size: 14px;
+  margin: 0;
+}
+
+@media (max-width: 860px) {
+  .columnas {
+    grid-template-columns: 1fr;
+  }
+}

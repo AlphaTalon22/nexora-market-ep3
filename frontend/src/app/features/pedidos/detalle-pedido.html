@@ -1,0 +1,87 @@
+@if (cargando()) {
+  <div class="estado-carga">
+    <div class="spinner"></div>
+    <p>Cargando pedido...</p>
+  </div>
+} @else if (!pedido()) {
+  <div class="estado-error">
+    <mat-icon>error_outline</mat-icon>
+    <h3>Pedido no encontrado</h3>
+    <p>El pedido solicitado no existe o fue eliminado.</p>
+    <a mat-flat-button color="primary" routerLink="/pedidos">Volver a mis pedidos</a>
+  </div>
+} @else {
+  <div class="encabezado">
+    <div>
+      <a class="volver" routerLink="/pedidos"><mat-icon>arrow_back</mat-icon> Mis pedidos</a>
+      <h1 class="titulo">Pedido #{{ pedido()!.id }}</h1>
+      <span class="fecha">{{ pedido()!.fecha | date: 'dd-MM-yyyy HH:mm' }}</span>
+    </div>
+    <app-estado-badge [estado]="pedido()!.estado" />
+  </div>
+
+  <div class="disposicion">
+    <section class="detalle">
+      <h2>Productos</h2>
+      @if (pedido()!.items && pedido()!.items!.length > 0) {
+        <div class="items">
+          @for (item of pedido()!.items!; track item.productoId) {
+            <div class="item">
+              <img [src]="item.imagen" [alt]="item.nombreProducto" />
+              <div class="item-info">
+                <span class="item-nombre">{{ item.nombreProducto }}</span>
+                <span class="item-cantidad">{{ item.cantidad }} × {{ item.precioUnitario | precioClp }}</span>
+              </div>
+              <span class="item-subtotal">{{ item.precioUnitario * item.cantidad | precioClp }}</span>
+            </div>
+          }
+        </div>
+      } @else {
+        <p class="sin-items">Este pedido fue creado desde datos de prueba y no tiene detalle de productos.</p>
+      }
+
+      <div class="total-fila">
+        <span>Total del pedido</span>
+        <span class="total">{{ pedido()!.total | precioClp }}</span>
+      </div>
+    </section>
+
+    <aside class="pago">
+      @if (pedido()!.estado === 'PAGADO') {
+        <div class="exito">
+          <mat-icon>check_circle</mat-icon>
+          <h2>Pedido pagado</h2>
+          <p>Tu pago fue aprobado y la boleta fue generada. Puedes revisarla en tu cuenta.</p>
+          <a mat-flat-button color="primary" routerLink="/cuenta">Ver mis boletas</a>
+        </div>
+      } @else if (pagando()) {
+        <div class="procesando">
+          <div class="spinner"></div>
+          <h2>Confirmando pedido...</h2>
+          <p>El pago fue enviado. Esta pantalla consulta el estado del pedido cada 2 segundos, simulando el procesamiento asíncrono con eventos.</p>
+        </div>
+      } @else {
+        <h2>Pagar pedido</h2>
+        <mat-form-field appearance="outline" class="campo">
+          <mat-label>Método de pago</mat-label>
+          <mat-select [value]="metodoPago()" (selectionChange)="metodoPago.set($event.value)">
+            @for (metodo of metodosPago; track metodo.valor) {
+              <mat-option [value]="metodo.valor">{{ metodo.nombre }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <div class="monto">
+          <span>Monto a pagar</span>
+          <strong>{{ pedido()!.total | precioClp }}</strong>
+        </div>
+
+        <button mat-flat-button color="primary" class="boton-pagar" (click)="pagar()">
+          <mat-icon>credit_card</mat-icon>
+          Pagar ahora
+        </button>
+        <p class="nota">Pago simulado: se marca como APROBADO y dispara los eventos de pago, boleta y actualización del pedido.</p>
+      }
+    </aside>
+  </div>
+}

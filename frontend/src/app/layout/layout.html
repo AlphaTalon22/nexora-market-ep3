@@ -1,0 +1,98 @@
+<header class="cabecera">
+  <mat-toolbar class="barra">
+    <a class="marca" routerLink="/">
+      <mat-icon class="logo-icono">storefront</mat-icon>
+      <span class="marca-texto">Nexora <strong>Market</strong></span>
+    </a>
+
+    <nav class="nav-escritorio">
+      <a mat-button routerLink="/" routerLinkActive="activo" [routerLinkActiveOptions]="{ exact: true }">Inicio</a>
+      <a mat-button routerLink="/catalogo" routerLinkActive="activo">Catálogo</a>
+      <a mat-button routerLink="/pedidos" routerLinkActive="activo">Mis pedidos</a>
+      <a mat-button routerLink="/dashboard" routerLinkActive="activo">Dashboard</a>
+      <a mat-button routerLink="/admin-kafka" routerLinkActive="activo">Admin</a>
+    </nav>
+
+    <span class="espaciador"></span>
+
+    <button
+      mat-icon-button
+      class="boton-carrito"
+      routerLink="/carrito"
+      aria-label="Ir al carrito"
+      [matBadge]="carrito.cantidadTotal()"
+      [matBadgeHidden]="carrito.cantidadTotal() === 0"
+      matBadgeColor="accent"
+      matBadgeSize="small"
+    >
+      <mat-icon>shopping_cart</mat-icon>
+    </button>
+
+    <button mat-button class="boton-usuario" [matMenuTriggerFor]="menuUsuario">
+      <span class="avatar">{{ iniciales() }}</span>
+      <span class="usuario-nombre">{{ usuario.usuario().nombre }}</span>
+      <mat-icon>arrow_drop_down</mat-icon>
+    </button>
+
+    <mat-menu #menuUsuario="matMenu">
+      <button mat-menu-item routerLink="/cuenta">
+        <mat-icon>person</mat-icon>
+        <span>Mi cuenta</span>
+      </button>
+      <button mat-menu-item disabled>
+        <mat-icon>login</mat-icon>
+        <span>Iniciar sesión (Fase 2)</span>
+      </button>
+    </mat-menu>
+
+    <button mat-icon-button class="boton-menu-movil" [matMenuTriggerFor]="menuMovil" aria-label="Abrir menú">
+      <mat-icon>menu</mat-icon>
+    </button>
+
+    <mat-menu #menuMovil="matMenu">
+      <button mat-menu-item routerLink="/">
+        <mat-icon>home</mat-icon>
+        <span>Inicio</span>
+      </button>
+      <button mat-menu-item routerLink="/catalogo">
+        <mat-icon>storefront</mat-icon>
+        <span>Catálogo</span>
+      </button>
+      <button mat-menu-item routerLink="/carrito">
+        <mat-icon>shopping_cart</mat-icon>
+        <span>Carrito ({{ carrito.cantidadTotal() }})</span>
+      </button>
+      <button mat-menu-item routerLink="/pedidos">
+        <mat-icon>receipt_long</mat-icon>
+        <span>Mis pedidos</span>
+      </button>
+      <button mat-menu-item routerLink="/cuenta">
+        <mat-icon>person</mat-icon>
+        <span>Mi cuenta</span>
+      </button>
+      <button mat-menu-item routerLink="/dashboard">
+        <mat-icon>dashboard</mat-icon>
+        <span>Dashboard</span>
+      </button>
+      <button mat-menu-item routerLink="/admin-kafka">
+        <mat-icon>admin_panel_settings</mat-icon>
+        <span>Administración</span>
+      </button>
+    </mat-menu>
+  </mat-toolbar>
+</header>
+
+<main class="contenido">
+  <router-outlet />
+</main>
+
+<footer class="pie">
+  <div class="pie-interior">
+    <span class="pie-marca">
+      <mat-icon>storefront</mat-icon>
+      Nexora Market
+    </span>
+    <span>Proyecto DSY1107 — Duoc UC · 2026</span>
+    <span class="pie-tec">Angular · Kafka · RabbitMQ · AWS</span>
+  </div>
+</footer>
