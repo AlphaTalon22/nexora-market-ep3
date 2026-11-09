@@ -5,8 +5,8 @@ import { MatIcon } from '@angular/material/icon';
 import { MatMenu, MatMenuItem, MatMenuTrigger } from '@angular/material/menu';
 import { MatToolbar } from '@angular/material/toolbar';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { AuthService } from '../core/services/auth.service';
 import { CarritoService } from '../core/services/carrito.service';
-import { UsuarioService } from '../core/services/usuario.service';
 
 @Component({
   selector: 'app-layout',
@@ -28,11 +28,16 @@ import { UsuarioService } from '../core/services/usuario.service';
 })
 export class Layout {
   readonly carrito = inject(CarritoService);
-  readonly usuario = inject(UsuarioService);
+  readonly auth = inject(AuthService);
 
   readonly iniciales = computed(() => {
-    const partes = this.usuario.usuario().nombre.split(' ');
-    return partes
+    const nombre = this.auth.usuario()?.nombre ?? '';
+    if (!nombre) {
+      return 'NX';
+    }
+
+    return nombre
+      .split(' ')
       .slice(0, 2)
       .map((parte) => parte.charAt(0))
       .join('')

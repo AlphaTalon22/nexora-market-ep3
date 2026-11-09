@@ -28,58 +28,85 @@
       <mat-icon>shopping_cart</mat-icon>
     </button>
 
-    <button mat-button class="boton-usuario" [matMenuTriggerFor]="menuUsuario">
-      <span class="avatar">{{ iniciales() }}</span>
-      <span class="usuario-nombre">{{ usuario.usuario().nombre }}</span>
-      <mat-icon>arrow_drop_down</mat-icon>
-    </button>
-
-    <mat-menu #menuUsuario="matMenu">
-      <button mat-menu-item routerLink="/cuenta">
-        <mat-icon>person</mat-icon>
-        <span>Mi cuenta</span>
+    @if (auth.autenticado()) {
+      <button mat-button class="boton-usuario" [matMenuTriggerFor]="menuUsuario">
+        <span class="avatar">{{ iniciales() }}</span>
+        <span class="usuario-nombre">{{ auth.usuario()!.nombre }}</span>
+        <mat-icon>arrow_drop_down</mat-icon>
       </button>
-      <button mat-menu-item disabled>
+    } @else {
+      <button mat-button class="boton-sesion" (click)="auth.login()">
         <mat-icon>login</mat-icon>
-        <span>Iniciar sesión (Fase 2)</span>
+        Iniciar sesión
       </button>
-    </mat-menu>
+      <button mat-stroked-button class="boton-registro" (click)="auth.crearCuenta()">Crear cuenta</button>
+    }
 
     <button mat-icon-button class="boton-menu-movil" [matMenuTriggerFor]="menuMovil" aria-label="Abrir menú">
       <mat-icon>menu</mat-icon>
     </button>
-
-    <mat-menu #menuMovil="matMenu">
-      <button mat-menu-item routerLink="/">
-        <mat-icon>home</mat-icon>
-        <span>Inicio</span>
-      </button>
-      <button mat-menu-item routerLink="/catalogo">
-        <mat-icon>storefront</mat-icon>
-        <span>Catálogo</span>
-      </button>
-      <button mat-menu-item routerLink="/carrito">
-        <mat-icon>shopping_cart</mat-icon>
-        <span>Carrito ({{ carrito.cantidadTotal() }})</span>
-      </button>
-      <button mat-menu-item routerLink="/pedidos">
-        <mat-icon>receipt_long</mat-icon>
-        <span>Mis pedidos</span>
-      </button>
-      <button mat-menu-item routerLink="/cuenta">
-        <mat-icon>person</mat-icon>
-        <span>Mi cuenta</span>
-      </button>
-      <button mat-menu-item routerLink="/dashboard">
-        <mat-icon>dashboard</mat-icon>
-        <span>Dashboard</span>
-      </button>
-      <button mat-menu-item routerLink="/admin-kafka">
-        <mat-icon>admin_panel_settings</mat-icon>
-        <span>Administración</span>
-      </button>
-    </mat-menu>
   </mat-toolbar>
+
+  <mat-menu #menuUsuario="matMenu">
+    <div class="menu-usuario-info">
+      <strong>{{ auth.usuario()?.nombre }}</strong>
+      <span>{{ auth.usuario()?.correo }}</span>
+    </div>
+    <button mat-menu-item routerLink="/cuenta">
+      <mat-icon>person</mat-icon>
+      <span>Mi cuenta</span>
+    </button>
+    <button mat-menu-item (click)="auth.cerrarSesion()">
+      <mat-icon>logout</mat-icon>
+      <span>Cerrar sesión</span>
+    </button>
+  </mat-menu>
+
+  <mat-menu #menuMovil="matMenu">
+    <button mat-menu-item routerLink="/">
+      <mat-icon>home</mat-icon>
+      <span>Inicio</span>
+    </button>
+    <button mat-menu-item routerLink="/catalogo">
+      <mat-icon>storefront</mat-icon>
+      <span>Catálogo</span>
+    </button>
+    <button mat-menu-item routerLink="/carrito">
+      <mat-icon>shopping_cart</mat-icon>
+      <span>Carrito ({{ carrito.cantidadTotal() }})</span>
+    </button>
+    <button mat-menu-item routerLink="/pedidos">
+      <mat-icon>receipt_long</mat-icon>
+      <span>Mis pedidos</span>
+    </button>
+    <button mat-menu-item routerLink="/cuenta">
+      <mat-icon>person</mat-icon>
+      <span>Mi cuenta</span>
+    </button>
+    <button mat-menu-item routerLink="/dashboard">
+      <mat-icon>dashboard</mat-icon>
+      <span>Dashboard</span>
+    </button>
+    <button mat-menu-item routerLink="/admin-kafka">
+      <mat-icon>admin_panel_settings</mat-icon>
+      <span>Administración</span>
+    </button>
+    @if (auth.autenticado()) {
+      <button mat-menu-item (click)="auth.cerrarSesion()">
+        <mat-icon>logout</mat-icon>
+        <span>Cerrar sesión</span>
+      </button>
+    } @else {
+      <button mat-menu-item (click)="auth.login()">
+        <mat-icon>login</mat-icon>
+        <span>Iniciar sesión</span>
+      </button>
+      <button mat-menu-item (click)="auth.crearCuenta()">
+        <mat-icon>person_add</mat-icon>
+        <span>Crear cuenta</span>
+      </button>
+    }
+  </mat-menu>
 </header>
 
 <main class="contenido">

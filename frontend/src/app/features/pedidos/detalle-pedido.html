@@ -3,29 +3,22 @@
     <div class="spinner"></div>
     <p>Cargando pedido...</p>
   </div>
-} @else if (!pedido()) {
-  <div class="estado-error">
-    <mat-icon>error_outline</mat-icon>
-    <h3>Pedido no encontrado</h3>
-    <p>El pedido solicitado no existe o fue eliminado.</p>
-    <a mat-flat-button color="primary" routerLink="/pedidos">Volver a mis pedidos</a>
-  </div>
-} @else {
+} @else if (pedido(); as p) {
   <div class="encabezado">
     <div>
       <a class="volver" routerLink="/pedidos"><mat-icon>arrow_back</mat-icon> Mis pedidos</a>
-      <h1 class="titulo">Pedido #{{ pedido()!.id }}</h1>
-      <span class="fecha">{{ pedido()!.fecha | date: 'dd-MM-yyyy HH:mm' }}</span>
+      <h1 class="titulo">Pedido #{{ p.id }}</h1>
+      <span class="fecha">{{ p.fecha | date: 'dd-MM-yyyy HH:mm' }}</span>
     </div>
-    <app-estado-badge [estado]="pedido()!.estado" />
+    <app-estado-badge [estado]="p.estado" />
   </div>
 
   <div class="disposicion">
     <section class="detalle">
       <h2>Productos</h2>
-      @if (pedido()!.items && pedido()!.items!.length > 0) {
+      @if (p.items && p.items.length > 0) {
         <div class="items">
-          @for (item of pedido()!.items!; track item.productoId) {
+          @for (item of p.items; track item.productoId) {
             <div class="item">
               <img [src]="item.imagen" [alt]="item.nombreProducto" />
               <div class="item-info">
@@ -42,12 +35,12 @@
 
       <div class="total-fila">
         <span>Total del pedido</span>
-        <span class="total">{{ pedido()!.total | precioClp }}</span>
+        <span class="total">{{ p.total | precioClp }}</span>
       </div>
     </section>
 
     <aside class="pago">
-      @if (pedido()!.estado === 'PAGADO') {
+      @if (p.estado === 'PAGADO') {
         <div class="exito">
           <mat-icon>check_circle</mat-icon>
           <h2>Pedido pagado</h2>
@@ -71,9 +64,22 @@
           </mat-select>
         </mat-form-field>
 
+        @if (metodoPago() !== 'TRANSFERENCIA') {
+          <mat-form-field appearance="outline" class="campo">
+            <mat-label>Últimos 4 dígitos de la tarjeta</mat-label>
+            <input
+              matInput
+              inputmode="numeric"
+              maxlength="4"
+              [value]="ultimos4()"
+              (input)="ultimos4.set($any($event.target).value)"
+            />
+          </mat-form-field>
+        }
+
         <div class="monto">
           <span>Monto a pagar</span>
-          <strong>{{ pedido()!.total | precioClp }}</strong>
+          <strong>{{ p.total | precioClp }}</strong>
         </div>
 
         <button mat-flat-button color="primary" class="boton-pagar" (click)="pagar()">
@@ -83,5 +89,12 @@
         <p class="nota">Pago simulado: se marca como APROBADO y dispara los eventos de pago, boleta y actualización del pedido.</p>
       }
     </aside>
+  </div>
+} @else {
+  <div class="estado-error">
+    <mat-icon>error_outline</mat-icon>
+    <h3>Pedido no encontrado</h3>
+    <p>El pedido solicitado no existe o fue eliminado.</p>
+    <a mat-flat-button color="primary" routerLink="/pedidos">Volver a mis pedidos</a>
   </div>
 }

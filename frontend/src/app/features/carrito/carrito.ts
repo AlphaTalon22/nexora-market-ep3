@@ -4,10 +4,10 @@ import { MatDivider } from '@angular/material/divider';
 import { MatIcon } from '@angular/material/icon';
 import { Router, RouterLink } from '@angular/router';
 import { ItemCarrito } from '../../core/models/item-carrito';
+import { AuthService } from '../../core/services/auth.service';
 import { CarritoService } from '../../core/services/carrito.service';
 import { PedidoService } from '../../core/services/pedido.service';
 import { ToastService } from '../../core/services/toast.service';
-import { UsuarioService } from '../../core/services/usuario.service';
 import { PrecioClpPipe } from '../../shared/pipes/precio-clp.pipe';
 
 @Component({
@@ -19,7 +19,7 @@ import { PrecioClpPipe } from '../../shared/pipes/precio-clp.pipe';
 export class Carrito {
   readonly carrito = inject(CarritoService);
   private readonly pedidos = inject(PedidoService);
-  private readonly usuario = inject(UsuarioService);
+  private readonly auth = inject(AuthService);
   private readonly toast = inject(ToastService);
   private readonly router = inject(Router);
 
@@ -43,12 +43,19 @@ export class Carrito {
       return;
     }
 
+    if (!this.auth.autenticado()) {
+      this.toast.error('Debes iniciar sesión para confirmar el pedido.');
+      this.auth.login();
+      return;
+    }
+
     this.confirmando.set(true);
     this.pedidos
       .crear({
-        clienteId: this.usuario.usuario().id,
-        total: this.carrito.total(),
-        items: this.carrito.items(),
+        items: this.carrito.items().map((item) => ({
+          productoId: item.productoId,
+          cantidad: item.cantidad,
+        })),
       })
       .subscribe((pedido) => {
         this.confirmando.set(false);

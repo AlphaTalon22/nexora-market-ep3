@@ -3,8 +3,8 @@
 <section class="perfil">
   <span class="avatar-grande">{{ iniciales() }}</span>
   <div class="perfil-datos">
-    <h2>{{ usuario.usuario().nombre }}</h2>
-    <p>{{ usuario.usuario().correo }}</p>
+    <h2>{{ auth.usuario()?.nombre ?? 'Invitado' }}</h2>
+    <p>{{ auth.usuario()?.correo ?? 'Sin correo' }}</p>
     <span class="etiqueta-cliente">Cliente Nexora Market</span>
   </div>
 </section>

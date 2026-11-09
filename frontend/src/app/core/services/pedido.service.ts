@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Observable, delay, of } from 'rxjs';
+import { CLIENTE_MOCK, buscarProducto } from '../mock/datos-mock';
 import { ItemCarrito } from '../models/item-carrito';
-import { EstadoPedido, Pedido } from '../models/pedido';
+import { CrearPedidoRequest, EstadoPedido, Pedido } from '../models/pedido';
 
 const CLAVE_ALMACENAMIENTO = 'nexora.pedidos';
 
@@ -15,17 +16,34 @@ export class PedidoService {
   }
 
   obtener(id: number): Observable<Pedido | undefined> {
-    return of(this.pedidos.find((pedido) => pedido.id === id)).pipe(delay(200));
+    return of(this.buscar(id)).pipe(delay(200));
   }
 
-  crear(datos: { clienteId: number; total: number; items: ItemCarrito[] }): Observable<Pedido> {
+  buscar(id: number): Pedido | undefined {
+    return this.pedidos.find((pedido) => pedido.id === id);
+  }
+
+  crear(datos: CrearPedidoRequest): Observable<Pedido> {
+    const items: ItemCarrito[] = datos.items.map((linea) => {
+      const producto = buscarProducto(linea.productoId);
+      return {
+        productoId: linea.productoId,
+        nombreProducto: producto?.nombre ?? `Producto ${linea.productoId}`,
+        precioUnitario: producto?.precio ?? 0,
+        cantidad: linea.cantidad,
+        imagen: producto?.imagen,
+      };
+    });
+
+    const total = items.reduce((suma, item) => suma + item.precioUnitario * item.cantidad, 0);
+
     const pedido: Pedido = {
       id: this.siguienteId(),
-      clienteId: datos.clienteId,
+      clienteId: CLIENTE_MOCK,
       fecha: new Date().toISOString(),
-      total: datos.total,
+      total,
       estado: 'PENDIENTE',
-      items: datos.items,
+      items,
     };
 
     this.pedidos = [pedido, ...this.pedidos];
@@ -56,14 +74,14 @@ export class PedidoService {
     return [
       {
         id: 2,
-        clienteId: 1,
+        clienteId: CLIENTE_MOCK,
         fecha: new Date(ahora - 86_400_000).toISOString(),
         total: 74980,
         estado: 'PAGADO',
       },
       {
         id: 1,
-        clienteId: 1,
+        clienteId: CLIENTE_MOCK,
         fecha: new Date(ahora - 172_800_000).toISOString(),
         total: 39990,
         estado: 'PENDIENTE',

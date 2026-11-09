@@ -1,0 +1,107 @@
+<div class="encabezado">
+  <div>
+    <h1 class="titulo">Dashboard en tiempo real</h1>
+    <p class="subtitulo">Métricas calculadas a partir de los eventos de Kafka (ms-analitica).</p>
+  </div>
+  <div class="estado-vivo">
+    <span class="punto-vivo"></span>
+    <span>En vivo</span>
+    @if (actualizado(); as fecha) {
+      <span class="actualizado">· actualizado {{ fecha | date: 'HH:mm:ss' }}</span>
+    }
+  </div>
+</div>
+
+@if (cargando()) {
+  <div class="estado-carga">
+    <div class="spinner"></div>
+    <p>Conectando con ms-analitica...</p>
+  </div>
+} @else {
+  <div class="kpis">
+    <article class="kpi">
+      <mat-icon>receipt_long</mat-icon>
+      <div>
+        <span class="kpi-valor">{{ resumen().pedidos }}</span>
+        <span class="kpi-etiqueta">Pedidos procesados</span>
+      </div>
+    </article>
+    <article class="kpi">
+      <mat-icon>shopping_bag</mat-icon>
+      <div>
+        <span class="kpi-valor">{{ resumen().ventas }}</span>
+        <span class="kpi-etiqueta">Ventas</span>
+      </div>
+    </article>
+    <article class="kpi">
+      <mat-icon>payments</mat-icon>
+      <div>
+        <span class="kpi-valor">{{ resumen().ingreso | precioClp }}</span>
+        <span class="kpi-etiqueta">Ingreso acumulado</span>
+      </div>
+    </article>
+  </div>
+
+  <section class="panel grafico">
+    <h2><mat-icon>show_chart</mat-icon> Ventas por minuto</h2>
+    <div class="grafico-contenedor">
+      <canvas baseChart type="line" [data]="lineChartData()" [options]="lineChartOptions"></canvas>
+    </div>
+  </section>
+
+  <div class="columnas">
+    <section class="panel">
+      <h2><mat-icon>local_fire_department</mat-icon> Top productos</h2>
+      <ul class="top-productos">
+        @for (producto of topProductos(); track producto.productoId; let indice = $index) {
+          <li>
+            <span class="posicion">{{ indice + 1 }}</span>
+            <div class="top-info">
+              <div class="top-fila">
+                <span class="top-nombre">{{ producto.nombre }}</span>
+                <span class="top-cantidad">{{ producto.cantidad }} uds</span>
+              </div>
+              <div class="barra-fondo">
+                <div class="barra-valor" [style.width.%]="porcentaje(producto)"></div>
+              </div>
+            </div>
+          </li>
+        }
+      </ul>
+    </section>
+
+    <section class="panel">
+      <h2><mat-icon>warning</mat-icon> Alertas de stock bajo</h2>
+      @if (alertas().length === 0) {
+        <p class="vacio">Sin alertas: todo el inventario está sobre el mínimo.</p>
+      } @else {
+        <ul class="alertas">
+          @for (alerta of alertas(); track alerta.productoId) {
+            <li>
+              <div class="alerta-info">
+                <span class="alerta-nombre">{{ alerta.nombre }}</span>
+                <span class="alerta-detalle">Stock actual: {{ alerta.stock }} unidades</span>
+              </div>
+              <span class="chip-alerta">{{ alerta.stock }} uds</span>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+  </div>
+
+  <section class="panel">
+    <h2><mat-icon>sensors</mat-icon> Eventos recientes de Kafka</h2>
+    <div class="feed">
+      @for (evento of eventos(); track evento.topico + evento.particion + evento.offset) {
+        <div class="evento">
+          <span class="evento-tipo">{{ evento.tipo }}</span>
+          <span class="evento-topico">{{ evento.topico }}</span>
+          <span class="evento-meta">partición {{ evento.particion }}</span>
+          <span class="evento-meta">offset {{ evento.offset }}</span>
+          <span class="evento-hora">{{ evento.timestamp | date: 'HH:mm:ss' }}</span>
+        </div>
+      }
+    </div>
+  </section>
+}

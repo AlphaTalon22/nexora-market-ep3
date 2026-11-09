@@ -4,9 +4,9 @@ import { MatIcon } from '@angular/material/icon';
 import { forkJoin } from 'rxjs';
 import { Boleta } from '../../core/models/boleta';
 import { Notificacion } from '../../core/models/notificacion';
+import { AuthService } from '../../core/services/auth.service';
 import { NotificacionService } from '../../core/services/notificacion.service';
 import { PagoService } from '../../core/services/pago.service';
-import { UsuarioService } from '../../core/services/usuario.service';
 import { PrecioClpPipe } from '../../shared/pipes/precio-clp.pipe';
 
 const ICONOS_NOTIFICACION: Record<Notificacion['tipo'], string> = {
@@ -22,7 +22,7 @@ const ICONOS_NOTIFICACION: Record<Notificacion['tipo'], string> = {
   styleUrl: './cuenta.css',
 })
 export class Cuenta {
-  readonly usuario = inject(UsuarioService);
+  readonly auth = inject(AuthService);
   private readonly notificacionService = inject(NotificacionService);
   private readonly pagoService = inject(PagoService);
 
@@ -31,8 +31,13 @@ export class Cuenta {
   readonly boletas = signal<Boleta[]>([]);
 
   readonly iniciales = computed(() => {
-    const partes = this.usuario.usuario().nombre.split(' ');
-    return partes
+    const nombre = this.auth.usuario()?.nombre ?? '';
+    if (!nombre) {
+      return 'NX';
+    }
+
+    return nombre
+      .split(' ')
       .slice(0, 2)
       .map((parte) => parte.charAt(0))
       .join('')

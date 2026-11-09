@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable, delay, of } from 'rxjs';
-import { Pago } from '../models/pago';
+import { CrearPagoRequest, Pago } from '../models/pago';
 import { PedidoService } from './pedido.service';
 
 const CLAVE_ALMACENAMIENTO = 'nexora.pagos';
@@ -15,12 +15,15 @@ export class PagoService {
     return of([...this.pagos]).pipe(delay(250));
   }
 
-  procesar(datos: { pedidoId: number; monto: number; metodoPago: string }): Observable<Pago> {
+  procesar(datos: CrearPagoRequest): Observable<Pago> {
+    const pedido = this.pedidos.buscar(datos.pedidoId);
+
     const pago: Pago = {
       id: this.siguienteId(),
       pedidoId: datos.pedidoId,
-      monto: datos.monto,
+      monto: pedido?.total ?? 0,
       metodoPago: datos.metodoPago,
+      ultimos4: datos.ultimos4,
       estado: 'APROBADO',
       fechaPago: new Date().toISOString(),
     };
@@ -52,6 +55,7 @@ export class PagoService {
         pedidoId: 2,
         monto: 74980,
         metodoPago: 'TARJETA_CREDITO',
+        ultimos4: '4242',
         estado: 'APROBADO',
         fechaPago: new Date(Date.now() - 86_400_000).toISOString(),
       },

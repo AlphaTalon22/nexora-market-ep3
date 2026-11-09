@@ -3,6 +3,7 @@ import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { MatButton } from '@angular/material/button';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
+import { MatInput } from '@angular/material/input';
 import { MatOption, MatSelect } from '@angular/material/select';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Pedido } from '../../core/models/pedido';
@@ -21,6 +22,7 @@ import { PrecioClpPipe } from '../../shared/pipes/precio-clp.pipe';
     MatFormField,
     MatLabel,
     MatIcon,
+    MatInput,
     MatSelect,
     MatOption,
     EstadoBadge,
@@ -40,6 +42,7 @@ export class DetallePedido {
   readonly pedido = signal<Pedido | null>(null);
   readonly pagando = signal(false);
   readonly metodoPago = signal('TARJETA_CREDITO');
+  readonly ultimos4 = signal('1234');
 
   readonly metodosPago = [
     { valor: 'TARJETA_CREDITO', nombre: 'Tarjeta de crédito' },
@@ -73,7 +76,11 @@ export class DetallePedido {
 
     this.pagando.set(true);
     this.pagos
-      .procesar({ pedidoId: pedido.id, monto: pedido.total, metodoPago: this.metodoPago() })
+      .procesar({
+        pedidoId: pedido.id,
+        metodoPago: this.metodoPago(),
+        ultimos4: this.ultimos4(),
+      })
       .subscribe(() => {
         this.toast.exito('Pago aprobado. Esperando la confirmación del pedido...');
         this.iniciarPolling(pedido.id);
@@ -84,13 +91,21 @@ export class DetallePedido {
     this.detenerPolling();
     this.intervalo = setInterval(() => {
       this.pedidos.obtener(id).subscribe((pedido) => {
-        if (pedido) {
-          this.pedido.set(pedido);
+        if (!pedido) {
+          return;
         }
-        if (pedido?.estado === 'PAGADO') {
+
+        this.pedido.set(pedido);
+
+        if (pedido.estado !== 'PENDIENTE') {
           this.detenerPolling();
           this.pagando.set(false);
-          this.toast.exito('Pedido confirmado como PAGADO');
+
+          if (pedido.estado === 'PAGADO') {
+            this.toast.exito('Pedido confirmado como PAGADO');
+          } else {
+            this.toast.error(`El pedido quedó en estado ${pedido.estado}.`);
+          }
         }
       });
     }, 2000);
