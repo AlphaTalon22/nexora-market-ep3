@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- Misma versión de Spring Boot que la EP2 -->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>4.1.1</version>
+        <relativePath/>
+    </parent>
+
+    <groupId>cl.duoc.nexoramarket</groupId>
+    <artifactId>nexora-backend</artifactId>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+    <name>nexora-backend</name>
+    <description>Nexora Market EP3 - microservicios con RabbitMQ y Kafka</description>
+
+    <modules>
+        <module>ms-productos</module>
+        <module>ms-pedidos</module>
+        <module>ms-pagos</module>
+        <module>ms-notificaciones</module>
+        <module>ms-rabbit-admin</module>
+    </modules>
+
+    <properties>
+        <java.version>17</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+</project>
