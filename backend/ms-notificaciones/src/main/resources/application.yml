@@ -1,9 +1,30 @@
+server:
+  port: ${PORT:8084}
+
 spring:
   application:
     name: ms-notificaciones
   config:
-    # Credenciales reales de RabbitMQ (NO se sube a GitHub, ver .gitignore)
+    # Credenciales reales de RabbitMQ y de la BD (NO se sube a GitHub, ver .gitignore)
     import: optional:classpath:application-secrets.properties
+
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/nexora_notificaciones?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=America/Santiago}
+    username: ${DB_USER:nexora}
+    password: ${DB_PASS:nexora123}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${NEXORA_JWT_ISSUER_URI:https://login.microsoftonline.com/5f26903b-8f3c-4181-afbb-a40c0b6e034d/v2.0}
+          audiences: ${NEXORA_JWT_AUDIENCE:967df881-c709-4c72-9c7c-787c1aa5557d,api://967df881-c709-4c72-9c7c-787c1aa5557d}
+
   rabbitmq:
     # Los dos nodos del clúster: si se pierde la conexión con uno, el cliente se reconecta al otro
     addresses: ${RABBITMQ_ADDRESSES:localhost:5672,localhost:5673}
@@ -45,8 +66,6 @@ nexora:
 
   notificaciones:
     simular-fallo-correo: false              # true = simula caída del servidor de correo (demo de reintento + DLQ)
-  boletas:
-    directorio: ./boletas                    # carpeta donde se escriben las boletas generadas
 
 logging:
   level:

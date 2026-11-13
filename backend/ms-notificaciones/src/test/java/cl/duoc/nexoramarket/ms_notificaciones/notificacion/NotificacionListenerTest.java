@@ -37,7 +37,7 @@ class NotificacionListenerTest {
 		channel = mock(Channel.class);
 		listener = new NotificacionListener(service);
 		evento = new EventoNegocio("ev-1", "pedido.creado", "ms-pedidos", LocalDateTime.now(),
-				10L, null, 1L, 450000.0, "PENDIENTE", null);
+				10L, null, "oid-cliente", 450000.0, "PENDIENTE", null);
 	}
 
 	@Test
