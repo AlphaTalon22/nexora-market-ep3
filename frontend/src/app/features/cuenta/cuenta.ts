@@ -5,8 +5,8 @@ import { forkJoin } from 'rxjs';
 import { Boleta } from '../../core/models/boleta';
 import { Notificacion } from '../../core/models/notificacion';
 import { AuthService } from '../../core/services/auth.service';
+import { BoletaService } from '../../core/services/boleta.service';
 import { NotificacionService } from '../../core/services/notificacion.service';
-import { PagoService } from '../../core/services/pago.service';
 import { PrecioClpPipe } from '../../shared/pipes/precio-clp.pipe';
 
 const ICONOS_NOTIFICACION: Record<Notificacion['tipo'], string> = {
@@ -24,7 +24,7 @@ const ICONOS_NOTIFICACION: Record<Notificacion['tipo'], string> = {
 export class Cuenta {
   readonly auth = inject(AuthService);
   private readonly notificacionService = inject(NotificacionService);
-  private readonly pagoService = inject(PagoService);
+  private readonly boletaService = inject(BoletaService);
 
   readonly cargando = signal(true);
   readonly notificaciones = signal<Notificacion[]>([]);
@@ -47,19 +47,14 @@ export class Cuenta {
   constructor() {
     forkJoin({
       notificaciones: this.notificacionService.listar(),
-      pagos: this.pagoService.listar(),
-    }).subscribe(({ notificaciones, pagos }) => {
-      this.notificaciones.set(notificaciones);
-      this.boletas.set(
-        pagos.map((pago) => ({
-          pagoId: pago.id,
-          pedidoId: pago.pedidoId,
-          fecha: pago.fechaPago,
-          metodoPago: pago.metodoPago,
-          monto: pago.monto,
-        })),
-      );
-      this.cargando.set(false);
+      boletas: this.boletaService.listar(),
+    }).subscribe({
+      next: ({ notificaciones, boletas }) => {
+        this.notificaciones.set(notificaciones);
+        this.boletas.set(boletas);
+        this.cargando.set(false);
+      },
+      error: () => this.cargando.set(false),
     });
   }
 
