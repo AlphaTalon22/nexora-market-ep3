@@ -20,11 +20,13 @@
     <description>Nexora Market EP3 - microservicios con RabbitMQ y Kafka</description>
 
     <modules>
+        <module>nexora-common</module>
         <module>ms-productos</module>
         <module>ms-pedidos</module>
         <module>ms-pagos</module>
         <module>ms-notificaciones</module>
         <module>ms-rabbit-admin</module>
+        <module>ms-kafka-admin</module>
     </modules>
 
     <properties>
