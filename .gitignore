@@ -20,3 +20,9 @@ Thumbs.db
 !*.env.example
 !.env.example
 application-secrets*.properties
+
+# Terraform (el tfstate guarda claves en texto plano)
+.terraform/
+*.tfstate
+*.tfstate.backup
+terraform.tfvars
