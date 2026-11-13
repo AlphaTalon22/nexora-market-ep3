@@ -23,20 +23,20 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
 
 /**
- * API REST de administración de RabbitMQ (expuesta en el Gateway como /rabbit-admin/**).
+ * API REST de administración de RabbitMQ (expuesta a través del frontend en /api/rabbit-admin/**).
  *
  * <pre>
- * POST   /rabbit-admin/queues                 crear cola           201 / 400 / 409
- * GET    /rabbit-admin/queues/{nombre}        ver estado de cola   200 / 404
- * DELETE /rabbit-admin/queues/{nombre}        eliminar cola        204 / 404
- * POST   /rabbit-admin/exchanges              crear exchange       201 / 400 / 409
- * DELETE /rabbit-admin/exchanges/{nombre}     eliminar exchange    204 / 404
- * POST   /rabbit-admin/bindings               crear binding        201 / 400 / 404
- * DELETE /rabbit-admin/bindings?cola=&exchange=&routingKey=   eliminar binding  204 / 400 / 404
+ * POST   /api/rabbit-admin/queues                 crear cola           201 / 400 / 409
+ * GET    /api/rabbit-admin/queues/{nombre}        ver estado de cola   200 / 404
+ * DELETE /api/rabbit-admin/queues/{nombre}        eliminar cola        204 / 404
+ * POST   /api/rabbit-admin/exchanges              crear exchange       201 / 400 / 409
+ * DELETE /api/rabbit-admin/exchanges/{nombre}     eliminar exchange    204 / 404
+ * POST   /api/rabbit-admin/bindings               crear binding        201 / 400 / 404
+ * DELETE /api/rabbit-admin/bindings?cola=&exchange=&routingKey=   eliminar binding  204 / 400 / 404
  * </pre>
  */
 @RestController
-@RequestMapping("/rabbit-admin")
+@RequestMapping("/api/rabbit-admin")
 public class RabbitAdminController {
 
 	private final RabbitAdminService adminService;
