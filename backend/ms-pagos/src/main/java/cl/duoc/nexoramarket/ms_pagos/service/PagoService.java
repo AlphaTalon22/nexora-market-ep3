@@ -70,7 +70,7 @@ public class PagoService {
 
 	@Transactional(readOnly = true)
 	public Pago buscarPorPedido(String clienteId, Long pedidoId) {
-		return pagoRepository.findByPedidoIdAndClienteId(pedidoId, clienteId)
+		return pagoRepository.findFirstByPedidoIdAndClienteIdOrderByFechaPagoDesc(pedidoId, clienteId)
 				.orElseThrow(() -> new RecursoNoEncontradoException("No hay pagos para el pedido " + pedidoId));
 	}
 }

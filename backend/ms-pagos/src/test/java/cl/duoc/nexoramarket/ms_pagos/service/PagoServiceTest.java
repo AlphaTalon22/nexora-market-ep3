@@ -8,6 +8,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -18,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import cl.duoc.nexoramarket.ms_pagos.dto.CrearPagoRequest;
 import cl.duoc.nexoramarket.ms_pagos.exception.PedidoNoDisponibleException;
+import cl.duoc.nexoramarket.ms_pagos.exception.RecursoNoEncontradoException;
 import cl.duoc.nexoramarket.ms_pagos.messaging.publisher.PagoEventPublisher;
 import cl.duoc.nexoramarket.ms_pagos.model.Pago;
 import cl.duoc.nexoramarket.ms_pagos.model.PedidoPorPagar;
@@ -101,5 +103,25 @@ class PagoServiceTest {
 		verify(pedidoPorPagarRepository).save(pedido);
 		verify(pagoEventPublisher).publicarResultadoPago(pago);
 		verify(pagoEventPublisher).solicitarBoleta(pago);
+	}
+
+	@Test
+	void buscarPorPedidoDevuelveElPagoMasRecienteDelCliente() {
+		Pago pago = new Pago(5L, 10L, CLIENTE, 450000.0, "TARJETA_CREDITO", "1234", "APROBADO",
+				LocalDateTime.now());
+		when(pagoRepository.findFirstByPedidoIdAndClienteIdOrderByFechaPagoDesc(10L, CLIENTE))
+				.thenReturn(Optional.of(pago));
+
+		assertThat(pagoService.buscarPorPedido(CLIENTE, 10L)).isSameAs(pago);
+	}
+
+	@Test
+	void buscarPorPedidoSinPagosResponde404() {
+		when(pagoRepository.findFirstByPedidoIdAndClienteIdOrderByFechaPagoDesc(10L, CLIENTE))
+				.thenReturn(Optional.empty());
+
+		assertThatThrownBy(() -> pagoService.buscarPorPedido(CLIENTE, 10L))
+				.isInstanceOf(RecursoNoEncontradoException.class)
+				.hasMessageContaining("pedido 10");
 	}
 }

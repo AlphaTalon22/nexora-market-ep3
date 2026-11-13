@@ -13,5 +13,5 @@ public interface PagoRepository extends JpaRepository<Pago, Long> {
 
     List<Pago> findByClienteId(String clienteId);
 
-    Optional<Pago> findByPedidoIdAndClienteId(Long pedidoId, String clienteId);
+    Optional<Pago> findFirstByPedidoIdAndClienteIdOrderByFechaPagoDesc(Long pedidoId, String clienteId);
 }
