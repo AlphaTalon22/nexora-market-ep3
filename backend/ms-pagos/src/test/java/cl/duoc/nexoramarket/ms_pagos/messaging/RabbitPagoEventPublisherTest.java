@@ -38,7 +38,8 @@ class RabbitPagoEventPublisherTest {
 	}
 
 	private Pago pago(String estado) {
-		return new Pago(3L, 10L, 450000.0, "DEBITO", estado, LocalDateTime.now());
+		return new Pago(3L, 10L, "oid-cliente", 450000.0, "TARJETA_DEBITO", "1234", estado,
+				LocalDateTime.now());
 	}
 
 	@Test
@@ -51,6 +52,7 @@ class RabbitPagoEventPublisherTest {
 		EventoNegocio evento = (EventoNegocio) mensaje.getValue();
 		assertThat(evento.pedidoId()).isEqualTo(10L);
 		assertThat(evento.pagoId()).isEqualTo(3L);
+		assertThat(evento.clienteId()).isEqualTo("oid-cliente");
 	}
 
 	@Test
@@ -68,7 +70,9 @@ class RabbitPagoEventPublisherTest {
 		ArgumentCaptor<Object> mensaje = ArgumentCaptor.forClass(Object.class);
 		verify(rabbitTemplate).convertAndSend(eq("nexora.documentos.direct"), eq("boleta.generar"), mensaje.capture(),
 				any(CorrelationData.class));
-		assertThat(((GenerarBoletaCommand) mensaje.getValue()).pagoId()).isEqualTo(3L);
+		GenerarBoletaCommand comando = (GenerarBoletaCommand) mensaje.getValue();
+		assertThat(comando.pagoId()).isEqualTo(3L);
+		assertThat(comando.clienteId()).isEqualTo("oid-cliente");
 	}
 
 	@Test

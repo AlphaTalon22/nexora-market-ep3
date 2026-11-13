@@ -16,14 +16,15 @@ public record EventoNegocio(
 		LocalDateTime ocurridoEn,
 		Long pedidoId,
 		Long pagoId,
-		Long clienteId,
+		String clienteId,
 		Double monto,
 		String estado,
 		String metodoPago) {
 
-	/** Construye el evento con el resultado de un pago (clienteId no se conoce en ms-pago). */
+	/** Construye el evento con el resultado de un pago. */
 	public static EventoNegocio desdePago(String tipo, Pago pago) {
 		return new EventoNegocio(UUID.randomUUID().toString(), tipo, "ms-pagos", LocalDateTime.now(),
-				pago.getPedidoId(), pago.getId(), null, pago.getMonto(), pago.getEstado(), pago.getMetodoPago());
+				pago.getPedidoId(), pago.getId(), pago.getClienteId(), pago.getMonto(), pago.getEstado(),
+				pago.getMetodoPago());
 	}
 }

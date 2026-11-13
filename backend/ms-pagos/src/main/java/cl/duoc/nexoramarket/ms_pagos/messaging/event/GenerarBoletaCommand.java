@@ -13,12 +13,13 @@ public record GenerarBoletaCommand(
 		String comandoId,
 		Long pagoId,
 		Long pedidoId,
+		String clienteId,
 		Double monto,
 		String metodoPago,
 		LocalDateTime fechaPago) {
 
 	public static GenerarBoletaCommand desdePago(Pago pago) {
 		return new GenerarBoletaCommand(UUID.randomUUID().toString(), pago.getId(), pago.getPedidoId(),
-				pago.getMonto(), pago.getMetodoPago(), pago.getFechaPago());
+				pago.getClienteId(), pago.getMonto(), pago.getMetodoPago(), pago.getFechaPago());
 	}
 }

@@ -1,5 +1,5 @@
 server:
-  port: 8084
+  port: ${PORT:8083}
 
 spring:
   application:
@@ -9,7 +9,9 @@ spring:
     import: optional:classpath:application-secrets.properties
 
   datasource:
-    url: jdbc:mysql://nexoramarket-db.cjwkbpbjiw3v.us-east-1.rds.amazonaws.com:3306/nexoramarket?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=America/Santiago
+    url: ${DB_URL:jdbc:mysql://localhost:3306/nexora_pagos?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=America/Santiago}
+    username: ${DB_USER:nexora}
+    password: ${DB_PASS:nexora123}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
@@ -36,7 +38,7 @@ spring:
 
 # =====================================================================
 # Topología RabbitMQ centralizada: TODOS los nombres viven aquí.
-# ms-pago solo PUBLICA, por eso declara exchanges y routing keys (no colas).
+# ms-pagos solo PUBLICA, por eso declara exchanges y routing keys (no colas).
 # =====================================================================
 nexora:
   messaging:

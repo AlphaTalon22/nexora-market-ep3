@@ -6,7 +6,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -28,17 +27,20 @@ public class Pago {
     @Column(nullable = false)
     private Long pedidoId;
 
-    @NotNull(message = "El monto es obligatorio")
-    @Min(value = 1, message = "El monto debe ser mayor a 0")
+    @Column(nullable = false)
+    private String clienteId; // oid de Entra ID
+
     @Column(nullable = false)
     private Double monto;
 
-    @NotNull(message = "El método de pago es obligatorio")
     @Column(nullable = false)
-    private String metodoPago; // Ejemplo: DEBITO, CREDITO, TRANSFERENCIA
+    private String metodoPago; // TARJETA_CREDITO, TARJETA_DEBITO, TRANSFERENCIA
+
+    @Column(nullable = false, length = 4)
+    private String ultimos4;
 
     @Column(nullable = false)
-    private String estado; // Ejemplo: PENDIENTE, APROBADO, RECHAZADO
+    private String estado; // APROBADO, RECHAZADO
 
     @Column(nullable = false)
     private LocalDateTime fechaPago;
