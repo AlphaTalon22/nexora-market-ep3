@@ -1,5 +1,8 @@
 package cl.duoc.nexoramarket.common.kafka;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 import java.time.LocalDateTime;
 
 /**
@@ -10,17 +13,17 @@ import java.time.LocalDateTime;
  * llamadas HTTP) y ms-analitica.
  */
 public record InventarioEvento(
-		String eventoId,
-		TipoEventoInventario tipo,
+		@NotBlank String eventoId,
+		@NotNull TipoEventoInventario tipo,
 		String origen,
 		LocalDateTime ocurridoEn,
-		Long productoId,
+		@NotNull Long productoId,
 		String sku,
 		String nombre,
 		String categoria,
-		Double precio,
+		@NotNull Double precio,
 		Integer stockAnterior,
-		Integer stockActual,
+		@NotNull Integer stockActual,
 		Integer stockMinimo,
 		boolean activo,
 		Long pedidoId) {

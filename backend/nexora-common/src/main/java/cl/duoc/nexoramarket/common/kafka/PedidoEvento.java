@@ -1,5 +1,10 @@
 package cl.duoc.nexoramarket.common.kafka;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -11,14 +16,14 @@ import java.util.List;
  * {@code productos-stock} para descontar stock al pagarse) y ms-analitica.
  */
 public record PedidoEvento(
-		String eventoId,
-		TipoEventoPedido tipo,
+		@NotBlank String eventoId,
+		@NotNull TipoEventoPedido tipo,
 		String origen,
 		LocalDateTime ocurridoEn,
-		Long pedidoId,
-		String clienteId,
-		List<ItemPedidoEvento> items,
-		Double total,
+		@NotNull Long pedidoId,
+		@NotBlank String clienteId,
+		@NotEmpty @Valid List<ItemPedidoEvento> items,
+		@NotNull Double total,
 		String estado,
 		String metodoPago) {
 }
