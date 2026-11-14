@@ -27,6 +27,7 @@
         <module>ms-notificaciones</module>
         <module>ms-rabbit-admin</module>
         <module>ms-kafka-admin</module>
+        <module>ms-analitica</module>
     </modules>
 
     <properties>

@@ -1,0 +1,39 @@
+server:
+  port: ${PORT:8085}
+
+spring:
+  application:
+    name: ms-analitica
+  config:
+    # Credenciales de la BD (NO se sube a GitHub, ver .gitignore)
+    import: optional:classpath:application-secrets.properties
+
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/nexora_analitica?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=America/Santiago}
+    username: ${DB_USER:nexora}
+    password: ${DB_PASS:nexora123}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${NEXORA_JWT_ISSUER_URI:https://login.microsoftonline.com/5f26903b-8f3c-4181-afbb-a40c0b6e034d/v2.0}
+          audiences: ${NEXORA_JWT_AUDIENCE:967df881-c709-4c72-9c7c-787c1aa5557d,api://967df881-c709-4c72-9c7c-787c1aa5557d}
+
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP:localhost:9092,localhost:9093,localhost:9094}
+    consumer:
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      # ErrorHandlingDeserializer: un JSON malformado no bloquea la partición y va al DLT
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      properties:
+        spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JacksonJsonDeserializer
+        spring.json.trusted.packages: cl.duoc.nexoramarket.common.kafka
+        spring.json.use.type.headers: false
