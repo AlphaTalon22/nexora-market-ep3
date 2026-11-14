@@ -1,0 +1,33 @@
+name: nexora-mysql
+
+services:
+  nexora-mysql:
+    image: mysql:8.4
+    container_name: nexora-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_USER: nexora
+      MYSQL_PASSWORD: nexora123
+    ports:
+      - "3306:3306"
+    volumes:
+      - nexora_mysql_data:/var/lib/mysql
+      # Al primer arranque crea las 5 bases y sus permisos
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      - nexora-net
+
+networks:
+  # La crea el docker-compose de Kafka (infra/kafka), por eso Kafka se levanta antes
+  nexora-net:
+    external: true
+
+volumes:
+  nexora_mysql_data:
