@@ -51,7 +51,7 @@ Environment="KAFKA_BOOTSTRAP=${infra_ip}:9092,${infra_ip}:9093,${infra_ip}:9094"
 Environment="NEXORA_JWT_ISSUER_URI=https://login.microsoftonline.com/${entra_tenant_id}/v2.0"
 Environment="NEXORA_JWT_AUDIENCE=${entra_audience}"
 Environment="PORT=$puerto"
-ExecStart=/usr/bin/java -jar $jar
+ExecStart=/usr/bin/java -Xms128m -Xmx384m -jar $jar
 Restart=always
 RestartSec=10
 
