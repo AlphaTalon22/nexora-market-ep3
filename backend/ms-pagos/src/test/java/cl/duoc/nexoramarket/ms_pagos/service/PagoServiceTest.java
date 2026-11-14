@@ -9,14 +9,19 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import cl.duoc.nexoramarket.common.kafka.ItemPedidoEvento;
+import cl.duoc.nexoramarket.common.kafka.PedidoEvento;
+import cl.duoc.nexoramarket.common.kafka.TipoEventoPedido;
 import cl.duoc.nexoramarket.ms_pagos.dto.CrearPagoRequest;
 import cl.duoc.nexoramarket.ms_pagos.exception.PedidoNoDisponibleException;
 import cl.duoc.nexoramarket.ms_pagos.exception.RecursoNoEncontradoException;
@@ -49,6 +54,12 @@ class PagoServiceTest {
 
 	private PedidoPorPagar pedido(String estado) {
 		return new PedidoPorPagar(1L, 10L, CLIENTE, 450000.0, estado);
+	}
+
+	private PedidoEvento eventoPedido(TipoEventoPedido tipo) {
+		return new PedidoEvento("evt-1", tipo, "ms-pedidos", LocalDateTime.now(), 10L, CLIENTE,
+				List.of(new ItemPedidoEvento(1L, 1, 450000.0, 450000.0)), 450000.0, "PENDIENTE",
+				"TARJETA_CREDITO");
 	}
 
 	@Test
@@ -103,6 +114,52 @@ class PagoServiceTest {
 		verify(pedidoPorPagarRepository).save(pedido);
 		verify(pagoEventPublisher).publicarResultadoPago(pago);
 		verify(pagoEventPublisher).solicitarBoleta(pago);
+	}
+
+	@Test
+	void pedidoCreadoRegistraLaCopiaLocalPendiente() {
+		when(pedidoPorPagarRepository.findByPedidoId(10L)).thenReturn(Optional.empty());
+
+		pagoService.registrarPedido(eventoPedido(TipoEventoPedido.PEDIDO_CREADO));
+
+		ArgumentCaptor<PedidoPorPagar> captor = ArgumentCaptor.forClass(PedidoPorPagar.class);
+		verify(pedidoPorPagarRepository).save(captor.capture());
+		assertThat(captor.getValue().getPedidoId()).isEqualTo(10L);
+		assertThat(captor.getValue().getClienteId()).isEqualTo(CLIENTE);
+		assertThat(captor.getValue().getTotal()).isEqualTo(450000.0);
+		assertThat(captor.getValue().getEstado()).isEqualTo("PENDIENTE");
+	}
+
+	@Test
+	void pedidoCreadoDuplicadoNoSeGuardaDosVeces() {
+		when(pedidoPorPagarRepository.findByPedidoId(10L))
+				.thenReturn(Optional.of(pedido("PENDIENTE")));
+
+		pagoService.registrarPedido(eventoPedido(TipoEventoPedido.PEDIDO_CREADO));
+
+		verify(pedidoPorPagarRepository, never()).save(any(PedidoPorPagar.class));
+	}
+
+	@Test
+	void pedidoCanceladoPendienteQuedaCancelado() {
+		PedidoPorPagar pedido = pedido("PENDIENTE");
+		when(pedidoPorPagarRepository.findByPedidoId(10L)).thenReturn(Optional.of(pedido));
+
+		pagoService.cancelarPedido(eventoPedido(TipoEventoPedido.PEDIDO_CANCELADO));
+
+		assertThat(pedido.getEstado()).isEqualTo("CANCELADO");
+		verify(pedidoPorPagarRepository).save(pedido);
+	}
+
+	@Test
+	void pedidoCanceladoYaPagadoNoSeToca() {
+		PedidoPorPagar pedido = pedido("PAGADO");
+		when(pedidoPorPagarRepository.findByPedidoId(10L)).thenReturn(Optional.of(pedido));
+
+		pagoService.cancelarPedido(eventoPedido(TipoEventoPedido.PEDIDO_CANCELADO));
+
+		assertThat(pedido.getEstado()).isEqualTo("PAGADO");
+		verify(pedidoPorPagarRepository, never()).save(any(PedidoPorPagar.class));
 	}
 
 	@Test

@@ -34,6 +34,22 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-amqp</artifactId>
         </dependency>
+        <!-- Jackson 3: serialización JSON de los eventos en el DLT -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jackson</artifactId>
+        </dependency>
+        <!-- Kafka: consumer pagos-pedidos (crea el pedido por pagar desde PEDIDO_CREADO) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-kafka</artifactId>
+        </dependency>
+        <!-- Contratos compartidos: PedidoEvento y Topicos -->
+        <dependency>
+            <groupId>cl.duoc.nexoramarket</groupId>
+            <artifactId>nexora-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>com.mysql</groupId>
