@@ -74,7 +74,7 @@ public class KafkaPagosConfig implements KafkaListenerConfigurer {
 		Map<Class<?>, KafkaOperations<?, ?>> plantillas = new LinkedHashMap<>();
 		plantillas.put(byte[].class, new KafkaTemplate<>(
 				new DefaultKafkaProducerFactory<>(kafkaProperties.buildProducerProperties(),
-						new ByteArraySerializer(), new ByteArraySerializer())));
+						new StringSerializer(), new ByteArraySerializer())));
 		plantillas.put(Object.class, new KafkaTemplate<>(
 				new DefaultKafkaProducerFactory<>(kafkaProperties.buildProducerProperties(),
 						new StringSerializer(), new JacksonJsonSerializer<>())));
