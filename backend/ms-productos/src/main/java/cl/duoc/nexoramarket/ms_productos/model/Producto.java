@@ -28,6 +28,7 @@ public class Producto {
     @Column(nullable = false)
     private String nombre;
 
+    @Column(length = 500)
     private String descripcion;
 
     @NotNull(message = "El precio es obligatorio")
@@ -41,4 +42,11 @@ public class Producto {
     private Integer stock;
 
     private String categoria;
+
+    // Ruta de la imagen que muestra el frontend (/img/productos/x.svg)
+    private String imagen;
+
+    // Bajo este valor ms-analitica levanta una alerta de stock
+    @Min(value = 0, message = "El stock mínimo no puede ser negativo")
+    private Integer stockMinimo;
 }

@@ -2,7 +2,6 @@ package cl.duoc.nexoramarket.ms_productos.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,54 +14,45 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import cl.duoc.nexoramarket.ms_productos.model.Producto;
-import cl.duoc.nexoramarket.ms_productos.repository.ProductoRepository;
+import cl.duoc.nexoramarket.ms_productos.service.ProductoService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/productos")
+@RequestMapping("/api/productos")
+@RequiredArgsConstructor
 public class ProductoController {
 
-    @Autowired
-    private ProductoRepository productoRepository;
+    private final ProductoService productoService;
 
     @GetMapping
-    public List<Producto> listarTodos() {
-        return productoRepository.findAll();
+    public List<Producto> listar() {
+        return productoService.listar();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Producto> buscarPorId(@PathVariable Long id) {
-        return productoRepository.findById(id)
+        return productoService.buscar(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
     public ResponseEntity<Producto> crear(@Valid @RequestBody Producto producto) {
-        Producto guardado = productoRepository.save(producto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(guardado);
+        return ResponseEntity.status(HttpStatus.CREATED).body(productoService.crear(producto));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Producto> actualizar(@PathVariable Long id, @Valid @RequestBody Producto datos) {
-        return productoRepository.findById(id)
-                .map(producto -> {
-                    producto.setNombre(datos.getNombre());
-                    producto.setDescripcion(datos.getDescripcion());
-                    producto.setPrecio(datos.getPrecio());
-                    producto.setStock(datos.getStock());
-                    producto.setCategoria(datos.getCategoria());
-                    return ResponseEntity.ok(productoRepository.save(producto));
-                })
+        return productoService.actualizar(id, datos)
+                .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
-        if (!productoRepository.existsById(id)) {
-            return ResponseEntity.notFound().build();
-        }
-        productoRepository.deleteById(id);
-        return ResponseEntity.noContent().build();
+        return productoService.eliminar(id)
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.notFound().build();
     }
 }
