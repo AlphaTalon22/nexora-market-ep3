@@ -1,6 +1,6 @@
 export const environment = {
   production: false,
-  apiBaseUrl: '/api',
+  apiBaseUrl: '',
   auth: {
     clientId: 'f8d02b1a-9d14-4d7e-87c4-24bbf430721a',
     authority: 'https://login.microsoftonline.com/5f26903b-8f3c-4181-afbb-a40c0b6e034d',

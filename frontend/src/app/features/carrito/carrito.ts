@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, signal } from '@angular/core';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatDivider } from '@angular/material/divider';
@@ -57,11 +58,17 @@ export class Carrito {
           cantidad: item.cantidad,
         })),
       })
-      .subscribe((pedido) => {
-        this.confirmando.set(false);
-        this.carrito.vaciar();
-        this.toast.exito(`Pedido #${pedido.id} creado correctamente`);
-        this.router.navigate(['/pedidos', pedido.id]);
+      .subscribe({
+        next: (pedido) => {
+          this.confirmando.set(false);
+          this.carrito.vaciar();
+          this.toast.exito(`Pedido #${pedido.id} creado correctamente`);
+          this.router.navigate(['/pedidos', pedido.id]);
+        },
+        error: (error: HttpErrorResponse) => {
+          this.confirmando.set(false);
+          this.toast.error(error.error?.error ?? 'No se pudo crear el pedido.');
+        },
       });
   }
 }

@@ -19,7 +19,7 @@
 <section class="seccion">
   <h2 class="titulo-seccion">Categorías</h2>
   <div class="grilla-categorias">
-    @for (categoria of categorias; track categoria) {
+    @for (categoria of categorias(); track categoria) {
       <a class="categoria-card" routerLink="/catalogo" [queryParams]="{ categoria }">
         <mat-icon>{{ icono(categoria) }}</mat-icon>
         <span>{{ categoria }}</span>

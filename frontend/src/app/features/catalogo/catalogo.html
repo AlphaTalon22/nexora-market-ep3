@@ -15,7 +15,7 @@
   <mat-form-field appearance="outline" class="campo-categoria">
     <mat-label>Categoría</mat-label>
     <mat-select [value]="categoria()" (selectionChange)="categoria.set($event.value)">
-      @for (opcion of categorias; track opcion) {
+      @for (opcion of categorias(); track opcion) {
         <mat-option [value]="opcion">{{ opcion }}</mat-option>
       }
     </mat-select>

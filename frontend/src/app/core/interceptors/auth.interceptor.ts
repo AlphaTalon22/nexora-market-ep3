@@ -9,7 +9,12 @@ export const authInterceptor: HttpInterceptorFn = (peticion, siguiente) => {
   const auth = inject(AuthService);
   const toast = inject(ToastService);
 
-  const vaAlApi = peticion.url.startsWith('/api') || peticion.url.startsWith(environment.apiBaseUrl);
+  const base = environment.apiBaseUrl.replace(/\/$/, '');
+  const esApi = peticion.url.startsWith('/api');
+  const url = esApi && base ? `${base}${peticion.url}` : peticion.url;
+  const vaAlApi =
+    esApi || (base !== '' && (peticion.url === base || peticion.url.startsWith(`${base}/`)));
+  const peticionApi = peticion.clone({ url });
 
   const respuesta$ = vaAlApi
     ? auth
@@ -18,8 +23,8 @@ export const authInterceptor: HttpInterceptorFn = (peticion, siguiente) => {
           switchMap((token) =>
             siguiente(
               token
-                ? peticion.clone({ setHeaders: { Authorization: `Bearer ${token}` } })
-                : peticion,
+                ? peticionApi.clone({ setHeaders: { Authorization: `Bearer ${token}` } })
+                : peticionApi,
             ),
           ),
         )

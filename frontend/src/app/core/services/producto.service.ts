@@ -1,23 +1,27 @@
-import { Injectable } from '@angular/core';
-import { Observable, delay, of } from 'rxjs';
-import { PRODUCTOS } from '../mock/datos-mock';
+import { HttpClient } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+import { Observable, map } from 'rxjs';
 import { Producto } from '../models/producto';
 
 @Injectable({ providedIn: 'root' })
 export class ProductoService {
+  private readonly http = inject(HttpClient);
+
   listar(): Observable<Producto[]> {
-    return of(PRODUCTOS).pipe(delay(400));
+    return this.http.get<Producto[]>('/api/productos');
   }
 
-  obtener(id: number): Observable<Producto | undefined> {
-    return of(PRODUCTOS.find((producto) => producto.id === id)).pipe(delay(200));
+  obtener(id: number): Observable<Producto> {
+    return this.http.get<Producto>(`/api/productos/${id}`);
   }
 
-  categorias(): string[] {
-    return [...new Set(PRODUCTOS.map((producto) => producto.categoria))];
+  categorias(): Observable<string[]> {
+    return this.listar().pipe(
+      map((productos) => [...new Set(productos.map((producto) => producto.categoria))]),
+    );
   }
 
   destacados(): Observable<Producto[]> {
-    return of(PRODUCTOS.slice(0, 4)).pipe(delay(400));
+    return this.listar().pipe(map((productos) => productos.slice(0, 4)));
   }
 }

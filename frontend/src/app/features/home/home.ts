@@ -30,12 +30,23 @@ export class Home {
 
   readonly cargando = signal(true);
   readonly destacados = signal<Producto[]>([]);
-  readonly categorias = this.productoService.categorias();
+  readonly categorias = signal<string[]>([]);
 
   constructor() {
-    this.productoService.destacados().subscribe((productos) => {
-      this.destacados.set(productos);
-      this.cargando.set(false);
+    this.productoService.categorias().subscribe({
+      next: (categorias) => this.categorias.set(categorias),
+      error: () => this.categorias.set([]),
+    });
+
+    this.productoService.destacados().subscribe({
+      next: (productos) => {
+        this.destacados.set(productos);
+        this.cargando.set(false);
+      },
+      error: () => {
+        this.cargando.set(false);
+        this.toast.error('No se pudieron cargar los productos destacados.');
+      },
     });
   }
 

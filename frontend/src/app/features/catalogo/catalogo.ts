@@ -36,7 +36,7 @@ export class Catalogo {
   readonly productos = signal<Producto[]>([]);
   readonly busqueda = signal('');
   readonly categoria = signal('Todas');
-  readonly categorias = ['Todas', ...this.productoService.categorias()];
+  readonly categorias = signal<string[]>(['Todas']);
 
   readonly filtrados = computed(() => {
     const texto = this.busqueda().trim().toLowerCase();
@@ -47,20 +47,37 @@ export class Catalogo {
       const coincideTexto =
         texto === '' ||
         producto.nombre.toLowerCase().includes(texto) ||
-        producto.descripcion.toLowerCase().includes(texto);
+        (producto.descripcion ?? '').toLowerCase().includes(texto);
       return coincideCategoria && coincideTexto;
     });
   });
 
   constructor() {
     const categoriaInicial = this.route.snapshot.queryParamMap.get('categoria');
-    if (categoriaInicial && this.categorias.includes(categoriaInicial)) {
-      this.categoria.set(categoriaInicial);
-    }
 
-    this.productoService.listar().subscribe((productos) => {
-      this.productos.set(productos);
-      this.cargando.set(false);
+    this.productoService.categorias().subscribe({
+      next: (categorias) => {
+        this.categorias.set(['Todas', ...categorias]);
+        if (
+          categoriaInicial &&
+          categorias.includes(categoriaInicial) &&
+          this.categoria() === 'Todas'
+        ) {
+          this.categoria.set(categoriaInicial);
+        }
+      },
+      error: () => this.toast.error('No se pudieron cargar las categorías.'),
+    });
+
+    this.productoService.listar().subscribe({
+      next: (productos) => {
+        this.productos.set(productos);
+        this.cargando.set(false);
+      },
+      error: () => {
+        this.cargando.set(false);
+        this.toast.error('No se pudo cargar el catálogo.');
+      },
     });
   }
 

@@ -1,3 +1,14 @@
+export interface BrokerInfo {
+  id: number;
+  host: string;
+  puerto: number;
+}
+
+export interface ClusterInfo {
+  brokers: BrokerInfo[];
+  controller: BrokerInfo;
+}
+
 export interface TopicoKafka {
   nombre: string;
   particiones: number;
@@ -8,7 +19,6 @@ export interface TopicoKafka {
 
 export interface ConsumerGroupKafka {
   grupo: string;
-  topico: string;
-  lag: number;
   estado: string;
+  lagTotal: number;
 }

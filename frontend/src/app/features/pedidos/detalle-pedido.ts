@@ -1,5 +1,7 @@
 import { DatePipe } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, DestroyRef, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButton } from '@angular/material/button';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
@@ -51,6 +53,8 @@ export class DetallePedido {
   ];
 
   private intervalo?: ReturnType<typeof setInterval>;
+  private readonly INTERVALO_POLLING_MS = 2500;
+  private readonly LIMITE_POLLING_MS = 120_000;
 
   constructor() {
     const id = Number(this.route.snapshot.paramMap.get('id'));
@@ -60,10 +64,24 @@ export class DetallePedido {
       return;
     }
 
-    this.pedidos.obtener(id).subscribe((pedido) => {
-      this.pedido.set(pedido ?? null);
-      this.cargando.set(false);
-    });
+    this.pedidos
+      .obtener(id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (pedido) => {
+          this.pedido.set(pedido);
+          this.cargando.set(false);
+          if (pedido.estado === 'PENDIENTE') {
+            this.iniciarPolling(pedido.id);
+          }
+        },
+        error: (error: HttpErrorResponse) => {
+          this.cargando.set(false);
+          this.toast.error(
+            error.status === 404 ? 'Pedido no encontrado.' : 'No se pudo cargar el pedido.',
+          );
+        },
+      });
 
     this.destroyRef.onDestroy(() => this.detenerPolling());
   }
@@ -81,34 +99,61 @@ export class DetallePedido {
         metodoPago: this.metodoPago(),
         ultimos4: this.ultimos4(),
       })
-      .subscribe(() => {
-        this.toast.exito('Pago aprobado. Esperando la confirmación del pedido...');
-        this.iniciarPolling(pedido.id);
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.toast.exito('Pago aprobado. Esperando la confirmación del pedido...');
+          this.iniciarPolling(pedido.id);
+        },
+        error: (error: HttpErrorResponse) => {
+          this.pagando.set(false);
+          this.toast.error(error.error?.error ?? 'No se pudo procesar el pago.');
+        },
       });
   }
 
   private iniciarPolling(id: number): void {
     this.detenerPolling();
+    const limite = Date.now() + this.LIMITE_POLLING_MS;
+
     this.intervalo = setInterval(() => {
-      this.pedidos.obtener(id).subscribe((pedido) => {
-        if (!pedido) {
-          return;
-        }
+      if (Date.now() >= limite) {
+        this.detenerPolling();
+        this.pagando.set(false);
+        this.toast.error(
+          'El pago no se confirmó a tiempo. Actualiza la página para ver el estado.',
+        );
+        return;
+      }
 
-        this.pedido.set(pedido);
+      this.pedidos
+        .obtener(id)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: (pedido) => {
+            this.pedido.set(pedido);
+            if (pedido.estado === 'PENDIENTE') {
+              return;
+            }
 
-        if (pedido.estado !== 'PENDIENTE') {
-          this.detenerPolling();
-          this.pagando.set(false);
+            this.detenerPolling();
+            this.pagando.set(false);
 
-          if (pedido.estado === 'PAGADO') {
-            this.toast.exito('Pedido confirmado como PAGADO');
-          } else {
-            this.toast.error(`El pedido quedó en estado ${pedido.estado}.`);
-          }
-        }
-      });
-    }, 2000);
+            if (pedido.estado === 'PAGADO') {
+              this.toast.exito('Pedido confirmado como PAGADO');
+            } else if (pedido.estado === 'RECHAZADO') {
+              this.toast.error('El pago fue rechazado.');
+            } else if (pedido.estado === 'CANCELADO') {
+              this.toast.error('El pedido fue cancelado.');
+            }
+          },
+          error: () => {
+            this.detenerPolling();
+            this.pagando.set(false);
+            this.toast.error('No se pudo consultar el estado del pedido.');
+          },
+        });
+    }, this.INTERVALO_POLLING_MS);
   }
 
   private detenerPolling(): void {

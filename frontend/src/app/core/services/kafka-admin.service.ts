@@ -1,31 +1,21 @@
-import { Injectable } from '@angular/core';
-import { Observable, delay, of } from 'rxjs';
-import { ConsumerGroupKafka, TopicoKafka } from '../models/kafka-admin';
-
-const TOPICOS: TopicoKafka[] = [
-  { nombre: 'nexora.pedidos.eventos', particiones: 3, replicas: 3, isr: 3, retencionMs: 604800000 },
-  { nombre: 'nexora.inventario.eventos', particiones: 3, replicas: 3, isr: 3, retencionMs: 2592000000 },
-  { nombre: 'nexora.pedidos.eventos.DLT', particiones: 3, replicas: 3, isr: 3, retencionMs: 1209600000 },
-  { nombre: 'nexora.inventario.eventos.DLT', particiones: 3, replicas: 3, isr: 3, retencionMs: 1209600000 },
-];
-
-const CONSUMER_GROUPS: ConsumerGroupKafka[] = [
-  { grupo: 'ms-analitica', topico: 'nexora.pedidos.eventos', lag: 0, estado: 'Stable' },
-  { grupo: 'ms-analitica', topico: 'nexora.inventario.eventos', lag: 2, estado: 'Stable' },
-  { grupo: 'ms-pedidos', topico: 'nexora.pedidos.eventos', lag: 0, estado: 'Stable' },
-];
+import { HttpClient } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+import { Observable } from 'rxjs';
+import { ClusterInfo, ConsumerGroupKafka, TopicoKafka } from '../models/kafka-admin';
 
 @Injectable({ providedIn: 'root' })
 export class KafkaAdminService {
-  listarTopicos(): Observable<TopicoKafka[]> {
-    return of([...TOPICOS]).pipe(delay(300));
+  private readonly http = inject(HttpClient);
+
+  cluster(): Observable<ClusterInfo> {
+    return this.http.get<ClusterInfo>('/api/kafka-admin/cluster');
   }
 
-  detalleTopico(nombre: string): Observable<TopicoKafka | undefined> {
-    return of(TOPICOS.find((topico) => topico.nombre === nombre)).pipe(delay(200));
+  listarTopicos(): Observable<TopicoKafka[]> {
+    return this.http.get<TopicoKafka[]>('/api/kafka-admin/topicos');
   }
 
   consumerGroups(): Observable<ConsumerGroupKafka[]> {
-    return of([...CONSUMER_GROUPS]).pipe(delay(250));
+    return this.http.get<ConsumerGroupKafka[]>('/api/kafka-admin/grupos');
   }
 }
