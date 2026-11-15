@@ -37,3 +37,28 @@ output "ssh_apps" {
   description = "Comando para entrar por SSH a la EC2 de microservicios"
   value       = "ssh -i labsuser.pem ec2-user@${aws_eip.apps.public_ip}"
 }
+
+output "api_url" {
+  description = "URL base de la HTTP API en el stage $default"
+  value       = aws_apigatewayv2_api.nexora.api_endpoint
+}
+
+output "cloudfront_url" {
+  description = "URL publica del frontend en CloudFront"
+  value       = "https://${aws_cloudfront_distribution.frontend.domain_name}"
+}
+
+output "frontend_bucket" {
+  description = "Bucket S3 privado del frontend"
+  value       = aws_s3_bucket.frontend.bucket
+}
+
+output "cloudfront_distribution_id" {
+  description = "ID de la distribucion CloudFront para invalidaciones"
+  value       = aws_cloudfront_distribution.frontend.id
+}
+
+output "comando_subir_frontend" {
+  description = "Comando para subir el build y invalidar CloudFront"
+  value       = "aws s3 sync frontend/dist/frontend/browser s3://${aws_s3_bucket.frontend.bucket} --delete && aws cloudfront create-invalidation --distribution-id ${aws_cloudfront_distribution.frontend.id} --paths \"/*\""
+}
