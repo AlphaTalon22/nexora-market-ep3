@@ -6,7 +6,7 @@ resource "aws_db_subnet_group" "nexora" {
 resource "aws_db_instance" "mysql" {
   identifier              = "nexora-mysql"
   engine                  = "mysql"
-  engine_version          = "8.0"
+  engine_version          = "8.4"
   instance_class          = var.db_instance_class
   allocated_storage       = 20
   storage_type            = "gp2"

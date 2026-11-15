@@ -28,11 +28,6 @@ crear_servicio() {
   local schema=$3
   local jar="/home/ec2-user/nexora-market-ep3/backend/$nombre/target/$nombre-1.0.0.jar"
 
-  if [ ! -f "$jar" ]; then
-    echo ">> $nombre todavia no tiene jar; se omite"
-    return
-  fi
-
   cat > "/etc/systemd/system/$nombre.service" <<EOF
 [Unit]
 Description=$nombre (Nexora Market EP3)
@@ -49,7 +44,7 @@ Environment="RABBITMQ_USER=${rabbit_user}"
 Environment="RABBITMQ_PASS=${rabbit_pass}"
 Environment="KAFKA_BOOTSTRAP=${infra_ip}:9092,${infra_ip}:9093,${infra_ip}:9094"
 Environment="NEXORA_JWT_ISSUER_URI=https://login.microsoftonline.com/${entra_tenant_id}/v2.0"
-Environment="NEXORA_JWT_AUDIENCE=${entra_audience}"
+Environment="NEXORA_JWT_AUDIENCE=${entra_audience},api://${entra_audience}"
 Environment="PORT=$puerto"
 ExecStart=/usr/bin/java -Xms128m -Xmx384m -jar $jar
 Restart=always
@@ -60,7 +55,7 @@ WantedBy=multi-user.target
 EOF
 
   systemctl daemon-reload
-  systemctl enable --now "$nombre"
+  systemctl enable --now "$nombre" || echo ">> $nombre aun sin jar; se iniciara con redeploy.sh"
 }
 
 crear_servicio ms-productos 8081 nexora_productos
@@ -70,5 +65,17 @@ crear_servicio ms-notificaciones 8084 nexora_notificaciones
 crear_servicio ms-analitica 8085 nexora_analitica
 crear_servicio ms-kafka-admin 8086 nexora_kafka_admin
 crear_servicio ms-rabbit-admin 8087 nexora_rabbit_admin
+
+cat > /home/ec2-user/redeploy.sh <<'REDEPLOY'
+#!/bin/bash
+set -euxo pipefail
+cd /home/ec2-user/nexora-market-ep3
+git pull
+cd backend
+./mvnw -DskipTests package
+sudo systemctl restart ms-productos ms-pedidos ms-pagos ms-notificaciones ms-analitica ms-kafka-admin ms-rabbit-admin
+REDEPLOY
+chown ec2-user:ec2-user /home/ec2-user/redeploy.sh
+chmod +x /home/ec2-user/redeploy.sh
 
 echo ">> Microservicios desplegados en los puertos 8081-8087"
