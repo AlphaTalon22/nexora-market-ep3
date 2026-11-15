@@ -36,7 +36,7 @@ class PagoEventosListenerTest {
 		service = mock(PedidoEstadoService.class);
 		channel = mock(Channel.class);
 		listener = new PagoEventosListener(service);
-		evento = new EventoNegocio("ev-9", "pago.aprobado", "ms-pago", LocalDateTime.now(), 10L, 3L, null,
+		evento = new EventoNegocio("ev-9", "pago.aprobado", "ms-pagos", LocalDateTime.now(), 10L, 3L, "cliente-1",
 				450000.0, "APROBADO", "DEBITO");
 	}
 

@@ -1,44 +1,65 @@
 package cl.duoc.nexoramarket.ms_pedidos.model;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "pedidos")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class Pedido {
+
+    public static final String PENDIENTE = "PENDIENTE";
+    public static final String PAGADO = "PAGADO";
+    public static final String RECHAZADO = "RECHAZADO";
+    public static final String CANCELADO = "CANCELADO";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull(message = "El ID del cliente es obligatorio")
-    @Column(nullable = false)
-    private Long clienteId;
+    /** oid (o sub) del usuario en Entra ID: viene del JWT, nunca del body. */
+    @Column(nullable = false, length = 64)
+    private String clienteId;
 
     @Column(nullable = false)
     private LocalDateTime fecha;
 
-    @NotNull(message = "El total es obligatorio")
-    @Min(value = 0, message = "El total no puede ser negativo")
+    /** Lo calcula el backend con los precios del catálogo local. */
     @Column(nullable = false)
     private Double total;
 
-    @NotBlank(message = "El estado es obligatorio")
-    @Column(nullable = false)
+    @Column(nullable = false, length = 20)
     private String estado;
+
+    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<ItemPedido> items = new ArrayList<>();
+
+    public Pedido(Long id, String clienteId, LocalDateTime fecha, Double total, String estado) {
+        this.id = id;
+        this.clienteId = clienteId;
+        this.fecha = fecha;
+        this.total = total;
+        this.estado = estado;
+    }
+
+    public void agregarItem(ItemPedido item) {
+        item.setPedido(this);
+        items.add(item);
+    }
 }

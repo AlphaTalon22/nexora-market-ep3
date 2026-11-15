@@ -34,6 +34,17 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-amqp</artifactId>
         </dependency>
+        <!-- Kafka: productor de PedidoEvento y consumer pedidos-catalogo -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-kafka</artifactId>
+        </dependency>
+        <!-- Contratos compartidos: PedidoEvento, InventarioEvento y Topicos -->
+        <dependency>
+            <groupId>cl.duoc.nexoramarket</groupId>
+            <artifactId>nexora-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>com.mysql</groupId>
@@ -111,4 +122,4 @@
             </plugin>
         </plugins>
     </build>
-</project>
+</project>

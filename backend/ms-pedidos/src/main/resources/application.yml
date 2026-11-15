@@ -1,15 +1,17 @@
 server:
-  port: 8083
+  port: ${PORT:8082}
 
 spring:
   application:
     name: ms-pedidos
   config:
-    # Credenciales de la BD y de RabbitMQ (NO se sube a GitHub, ver .gitignore)
+    # Credenciales locales opcionales (NO se sube a GitHub, ver .gitignore)
     import: optional:classpath:application-secrets.properties
 
   datasource:
-    url: jdbc:mysql://nexoramarket-db.cjwkbpbjiw3v.us-east-1.rds.amazonaws.com:3306/nexoramarket?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=America/Santiago
+    url: ${DB_URL:jdbc:mysql://localhost:3306/nexora_pedidos?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=America/Santiago}
+    username: ${DB_USER:nexora}
+    password: ${DB_PASS:nexora123}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
@@ -27,8 +29,8 @@ spring:
   rabbitmq:
     # Los dos nodos del clúster: si se pierde la conexión con uno, el cliente se reconecta al otro
     addresses: ${RABBITMQ_ADDRESSES:localhost:5672,localhost:5673}
-    username: ${RABBITMQ_USER:guest}
-    password: ${RABBITMQ_PASS:guest}
+    username: ${RABBITMQ_USER:nexora}
+    password: ${RABBITMQ_PASS:nexora123}
     connection-timeout: 3s               # si RabbitMQ no responde, no se bloquea la petición HTTP
     publisher-confirm-type: correlated   # el broker confirma cada mensaje publicado
     publisher-returns: true              # avisa si un mensaje no llegó a ninguna cola
@@ -39,6 +41,33 @@ spring:
         acknowledge-mode: manual          # el consumidor decide ACK / NACK explícitamente
         prefetch: 1
         default-requeue-rejected: false
+
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP:localhost:9092,localhost:9093,localhost:9094}
+    # Productor de PedidoEvento (key = pedidoId, valor JSON)
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JacksonJsonSerializer
+      # acks=all + idempotencia: confirmado por las réplicas en sync (min.insync=2) y sin duplicados por reintento
+      acks: all
+      retries: 10
+      properties:
+        enable.idempotence: true
+        max.in.flight.requests.per.connection: 5
+        linger.ms: 5
+        max.block.ms: 5000                # si Kafka no responde, no bloquear la petición más de 5 s
+        spring.json.add.type.headers: false
+    # Consumer pedidos-catalogo (lee InventarioEvento de nexora.inventario.eventos)
+    consumer:
+      auto-offset-reset: earliest         # al arrancar por primera vez lee el catálogo completo
+      enable-auto-commit: false
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      # ErrorHandlingDeserializer: un JSON malformado no bloquea la partición y va al DLT
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      properties:
+        spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JacksonJsonDeserializer
+        spring.json.trusted.packages: cl.duoc.nexoramarket.common.kafka
+        spring.json.use.type.headers: false
 
 # =====================================================================
 # Topología RabbitMQ centralizada: TODOS los nombres viven aquí.
