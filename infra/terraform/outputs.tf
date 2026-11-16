@@ -43,22 +43,12 @@ output "api_url" {
   value       = aws_apigatewayv2_api.nexora.api_endpoint
 }
 
-output "cloudfront_url" {
-  description = "URL publica del frontend en CloudFront"
-  value       = "https://${aws_cloudfront_distribution.frontend.domain_name}"
-}
-
-output "frontend_bucket" {
-  description = "Bucket S3 privado del frontend"
-  value       = aws_s3_bucket.frontend.bucket
-}
-
-output "cloudfront_distribution_id" {
-  description = "ID de la distribucion CloudFront para invalidaciones"
-  value       = aws_cloudfront_distribution.frontend.id
+output "frontend_url" {
+  description = "URL publica del frontend servido por nginx via API Gateway"
+  value       = aws_apigatewayv2_api.nexora.api_endpoint
 }
 
 output "comando_subir_frontend" {
-  description = "Comando para subir el build y invalidar CloudFront"
-  value       = "aws s3 sync frontend/dist/frontend/browser s3://${aws_s3_bucket.frontend.bucket} --delete && aws cloudfront create-invalidation --distribution-id ${aws_cloudfront_distribution.frontend.id} --paths \"/*\""
+  description = "Comando para subir el build del frontend a la EC2 de apps"
+  value       = "scp -i $HOME\\.ssh\\labsuser.pem -r frontend/dist/frontend/browser ec2-user@${aws_eip.apps.public_ip}:/tmp/ && ssh -i $HOME\\.ssh\\labsuser.pem ec2-user@${aws_eip.apps.public_ip} \"rm -rf /usr/share/nginx/html/nexora/* && cp -r /tmp/browser/* /usr/share/nginx/html/nexora/\""
 }

@@ -6,6 +6,39 @@ set -euxo pipefail
 # =====================================================================
 
 dnf install -y java-17-amazon-corretto-devel git
+dnf install -y nginx
+
+cat > /etc/nginx/nginx.conf <<'NGINX'
+user nginx;
+worker_processes auto;
+error_log /var/log/nginx/error.log;
+pid /run/nginx.pid;
+
+events {
+    worker_connections 1024;
+}
+
+http {
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+    sendfile on;
+
+    server {
+        listen 80 default_server;
+        root /usr/share/nginx/html/nexora;
+        index index.html;
+
+        location / {
+            try_files $uri $uri/ /index.html;
+        }
+    }
+}
+NGINX
+
+mkdir -p /usr/share/nginx/html/nexora
+echo "Nexora: frontend pendiente" > /usr/share/nginx/html/nexora/index.html
+chown -R ec2-user:ec2-user /usr/share/nginx/html/nexora
+systemctl enable --now nginx
 
 # 2 GB de swap para el build y los 7 servicios
 dd if=/dev/zero of=/swapfile bs=1M count=2048

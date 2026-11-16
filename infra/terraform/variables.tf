@@ -92,3 +92,9 @@ variable "entra_audience" {
   type        = string
   default     = "967df881-c709-4c72-9c7c-787c1aa5557d"
 }
+
+variable "cidr_paneles" {
+  description = "Origen permitido para Kafka UI y el panel de RabbitMQ (protegidos con usuario y clave)"
+  type        = string
+  default     = "0.0.0.0/0"
+}

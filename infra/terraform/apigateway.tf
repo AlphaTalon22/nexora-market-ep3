@@ -3,10 +3,7 @@ resource "aws_apigatewayv2_api" "nexora" {
   protocol_type = "HTTP"
 
   cors_configuration {
-    allow_origins = [
-      "https://${aws_cloudfront_distribution.frontend.domain_name}",
-      "http://localhost:4200",
-    ]
+    allow_origins = ["http://localhost:4200"]
     allow_methods = ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
     allow_headers = ["authorization", "content-type"]
     max_age       = 3600
@@ -76,6 +73,18 @@ resource "aws_apigatewayv2_integration" "servicios" {
   }
 }
 
+resource "aws_apigatewayv2_integration" "frontend" {
+  api_id                 = aws_apigatewayv2_api.nexora.id
+  integration_type       = "HTTP_PROXY"
+  integration_method     = "ANY"
+  integration_uri        = "http://${aws_eip.apps.public_ip}:80"
+  payload_format_version = "1.0"
+
+  request_parameters = {
+    "overwrite:path" = "$request.path"
+  }
+}
+
 resource "aws_apigatewayv2_route" "api" {
   for_each = { for ruta in local.rutas : ruta.clave => ruta }
 
@@ -87,6 +96,15 @@ resource "aws_apigatewayv2_route" "api" {
   authorizer_id      = each.value.publica ? null : aws_apigatewayv2_authorizer.entra.id
 }
 
+resource "aws_apigatewayv2_route" "frontend" {
+  for_each = toset(["GET /", "GET /{proxy+}"])
+
+  api_id             = aws_apigatewayv2_api.nexora.id
+  route_key          = each.value
+  target             = "integrations/${aws_apigatewayv2_integration.frontend.id}"
+  authorization_type = "NONE"
+}
+
 resource "aws_apigatewayv2_stage" "default" {
   api_id      = aws_apigatewayv2_api.nexora.id
   name        = "$default"
@@ -95,5 +113,6 @@ resource "aws_apigatewayv2_stage" "default" {
   depends_on = [
     aws_apigatewayv2_integration.servicios,
     aws_apigatewayv2_route.api,
+    aws_apigatewayv2_route.frontend,
   ]
 }

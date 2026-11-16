@@ -49,20 +49,20 @@ resource "aws_vpc_security_group_ingress_rule" "infra_ssh" {
 
 resource "aws_vpc_security_group_ingress_rule" "infra_kafka_ui" {
   security_group_id = aws_security_group.infra.id
-  description       = "Kafka UI desde mi IP"
+  description       = "Kafka UI (login)"
   ip_protocol       = "tcp"
   from_port         = 8080
   to_port           = 8080
-  cidr_ipv4         = var.mi_ip
+  cidr_ipv4         = var.cidr_paneles
 }
 
 resource "aws_vpc_security_group_ingress_rule" "infra_rabbit_ui" {
   security_group_id = aws_security_group.infra.id
-  description       = "Panel RabbitMQ desde mi IP"
+  description       = "Panel RabbitMQ (login)"
   ip_protocol       = "tcp"
   from_port         = 15672
   to_port           = 15673
-  cidr_ipv4         = var.mi_ip
+  cidr_ipv4         = var.cidr_paneles
 }
 
 resource "aws_vpc_security_group_ingress_rule" "infra_kafka" {
@@ -100,6 +100,15 @@ resource "aws_vpc_security_group_ingress_rule" "apps_servicios" {
   ip_protocol       = "tcp"
   from_port         = 8081
   to_port           = 8087
+  cidr_ipv4         = "0.0.0.0/0"
+}
+
+resource "aws_vpc_security_group_ingress_rule" "apps_http" {
+  security_group_id = aws_security_group.apps.id
+  description       = "Frontend nginx (lo consume el API Gateway)"
+  ip_protocol       = "tcp"
+  from_port         = 80
+  to_port           = 80
   cidr_ipv4         = "0.0.0.0/0"
 }
 
